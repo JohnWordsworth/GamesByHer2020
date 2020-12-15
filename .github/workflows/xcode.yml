@@ -25,4 +25,4 @@ jobs:
         env:
           project: ${{ 'TextAdventure.xcodeproj' }}
           scheme: ${{ 'TextAdventure' }}
-        run: xcodebuild clean test -project "$project" -scheme "$scheme" 
+        run: xcodebuild clean build -project "$project" -scheme "$scheme" 
