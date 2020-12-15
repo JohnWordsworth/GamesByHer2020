@@ -10,12 +10,13 @@
 // BaseItem
 //
 
-BaseItem::BaseItem(const std::string& id, const std::string& title, bool consumable)
-{
-	this->id = id;
-	this->title = title;
-	this->consumable = consumable;
-}
+BaseItem::BaseItem(const std::string& id, const std::string& title, bool consumable) :
+	id(id), title(title), consumable(consumable)
+{ }
+
+
+BaseItem::~BaseItem() 
+{ }
 
 
 
@@ -24,10 +25,8 @@ BaseItem::BaseItem(const std::string& id, const std::string& title, bool consuma
 //
 
 TeleportItem::TeleportItem(const std::string& id, const std::string& title, const std::string& targetLocationId) :
-	BaseItem(id, title, true)
-{
-	this->targetLocationId = targetLocationId;
-}
+	BaseItem(id, title, true), targetLocationId(targetLocationId)
+{ }
 
 
 void TeleportItem::useItem()
@@ -50,10 +49,8 @@ void TeleportItem::useItem()
 //
 
 NoteItem::NoteItem(const std::string& id, const std::string& title, const std::string& useText) :
-	BaseItem(id, title, false)
-{
-	this->useText = useText;
-}
+	BaseItem(id, title, false), useText(useText)
+{ }
 
 
 void NoteItem::useItem()

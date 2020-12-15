@@ -10,6 +10,7 @@
 class BaseItem {
 public:
 	BaseItem(const std::string& id, const std::string& title, bool consumable);
+	virtual ~BaseItem();
 
 	virtual void useItem() = 0;
 
@@ -26,7 +27,7 @@ class TeleportItem : public BaseItem {
 public:
 	TeleportItem(const std::string& itemId, const std::string& title, const std::string& targetLocationId);
 
-	virtual void useItem();
+	void useItem() override;
 
 protected:
 	std::string targetLocationId;
@@ -40,7 +41,7 @@ class NoteItem : public BaseItem {
 public:
 	NoteItem(const std::string& id, const std::string& title, const std::string& useText);
 
-	virtual void useItem();
+	void useItem() override;
 
 protected:
 	std::string useText;

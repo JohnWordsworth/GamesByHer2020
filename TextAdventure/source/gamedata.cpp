@@ -40,7 +40,7 @@ GameData::GameData()
 
 std::shared_ptr<Location> GameData::getLocationWithId(const std::string& id)
 {
-	for (int i = 0; i < locations.size(); ++i) {
+	for (size_t i = 0; i < locations.size(); ++i) {
 		if (locations[i]->id == id) {
 			return locations[i];
 		}
@@ -52,13 +52,25 @@ std::shared_ptr<Location> GameData::getLocationWithId(const std::string& id)
 
 std::shared_ptr<BaseItem> GameData::getItemWithId(const std::string& id)
 {
-	for (int i = 0; i < items.size(); ++i) {
+	for (size_t i = 0; i < items.size(); ++i) {
 		if (items[i]->id == id) {
 			return items[i];
 		}
 	}
 
 	return nullptr;
+}
+
+
+const std::vector<std::shared_ptr<Location>>& GameData::getLocations() const
+{
+	return locations;
+}
+
+
+const std::vector<std::shared_ptr<BaseItem>>& GameData::getItems() const
+{
+	return items;
 }
 
 

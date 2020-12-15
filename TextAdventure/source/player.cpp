@@ -5,7 +5,7 @@
 
 void Player::addItem(const std::string& itemId, int amount)
 {
-	for (int i = 0; i < inventory.size(); ++i) {
+	for (size_t i = 0; i < inventory.size(); ++i) {
 		if (inventory[i].item->id == itemId) {
 			inventory[i].amount += amount;
 			return;
@@ -25,7 +25,7 @@ void Player::addItem(const std::string& itemId, int amount)
 
 void Player::removeItem(const std::string& itemId, int amount)
 {
-	for (int i = 0; i < inventory.size(); ++i) {
+	for (size_t i = 0; i < inventory.size(); ++i) {
 		if (inventory[i].item->id == itemId) {
 			inventory[i].amount -= amount;
 
@@ -41,7 +41,7 @@ void Player::removeItem(const std::string& itemId, int amount)
 
 bool Player::hasItem(const std::string& itemId)
 {
-	for (int i = 0; i < inventory.size(); ++i) {
+	for (size_t i = 0; i < inventory.size(); ++i) {
 		if (inventory[i].item->id == itemId && inventory[i].amount > 0) {
 			return true;
 		}
@@ -62,7 +62,7 @@ void Player::addVisitedLocation(const std::string& id)
 
 bool Player::hasVisitedLocation(const std::string& id)
 {
-	for (int i = 0; i < visitedLocations.size(); ++i) {
+	for (size_t i = 0; i < visitedLocations.size(); ++i) {
 		if (visitedLocations[i] == id) {
 			return true;
 		}

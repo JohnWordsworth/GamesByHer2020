@@ -58,7 +58,7 @@ void Game::runMainMenu() {
 
 		if (choice == 1) {
 			player = Player();					// Reset Player
-			player.currentLocation = gameData.locations[0];
+			player.currentLocation = gameData.getLocations()[0];
 			gameMode = GameMode::InGame;
 			return;
 		} 
@@ -68,11 +68,12 @@ void Game::runMainMenu() {
 			return;
 		}
 		else if (choice == 3) {
-			for (size_t i = 0; i < gameData.locations.size(); ++i) {
-				std::cout << gameData.locations[i]->id << ": " << gameData.locations[i]->text << "\n\n";
+			for (size_t i = 0; i < gameData.getLocations().size(); ++i) {
+				std::cout << gameData.getLocations()[i]->id << ": " << gameData.getLocations()[i]->text << "\n\n";
 			}
 		}
 		else if (choice == 4) {
+			gameMode = GameMode::None;
 			return;
 		}
 	}
@@ -80,7 +81,7 @@ void Game::runMainMenu() {
 
 
 void Game::runGame() {
-	while (true) {
+	while (gameMode == GameMode::InGame) {
 		if (player.currentLocation == nullptr) {
 			std::cout << "Your adventure has come to an end.\n";
 			gameMode = GameMode::None;
@@ -94,7 +95,7 @@ void Game::runGame() {
 		if (player.hasVisitedLocation(player.currentLocation->id) == false) {
 			player.addVisitedLocation(player.currentLocation->id);
 
-			for (int i = 0; i < player.currentLocation->items.size(); ++i) {
+			for (size_t i = 0; i < player.currentLocation->items.size(); ++i) {
 				std::shared_ptr<BaseItem> item = gameData.getItemWithId(player.currentLocation->items[i]);
 
 				if (item != nullptr) {
@@ -169,7 +170,7 @@ void Game::handleInGameMenu() {
 	std::cout << " [1] Continue Game\n";
 	std::cout << " [2] Save Game\n";
 	std::cout << " [3] Load Last Save\n";
-	std::cout << " [4] Exit Game\n";
+	std::cout << " [4] Save & Exit Game\n";
 
 	while (true) {
 		std::string input;
@@ -218,7 +219,7 @@ void Game::handleInventory() {
 	
 	std::cout << "Select an item from your inventory... \n";
 	
-	for(int i = 0; i < player.inventory.size(); ++i) {
+	for(size_t i = 0; i < player.inventory.size(); ++i) {
 		std::cout << " [" << (i+1) << "] " << player.inventory[i].item->title << "\n";
 	}
 
@@ -266,7 +267,7 @@ void Game::saveGame(const std::string& path) {
 	file << player.currentLocation->id << "\n";
 
 	// Line 3: Comma separated list of "itemid:amount" - i.e. "sword:1,apple:2,scroll:1"
-	for (int i = 0; i < player.inventory.size(); ++i) {
+	for (size_t i = 0; i < player.inventory.size(); ++i) {
 		if (i > 0) {
 			file << ",";
 		}
@@ -277,7 +278,7 @@ void Game::saveGame(const std::string& path) {
 	file << "\n";
 
 	// Line 4: Comma separated list of visited locations
-	for (int i = 0; i < player.visitedLocations.size(); ++i) {
+	for (size_t i = 0; i < player.visitedLocations.size(); ++i) {
 		if (i > 0) {
 			file << ",";
 		}
@@ -312,7 +313,7 @@ void Game::loadGame(const std::string& path) {
 	std::getline(file, line);
 	std::vector<std::string> items = split(line, ',');
 
-	for (int i = 0; i < items.size(); ++i) {
+	for (size_t i = 0; i < items.size(); ++i) {
 		std::vector<std::string> tokens = split(items[i], ':');
 
 		if (tokens.size() == 2) {

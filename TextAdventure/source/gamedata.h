@@ -42,13 +42,17 @@ public:
 	std::shared_ptr<Location> getLocationWithId(const std::string& id);
 	std::shared_ptr<BaseItem> getItemWithId(const std::string& id);
 
-	std::vector<std::shared_ptr<Location>> locations;
-	std::vector<std::shared_ptr<BaseItem>> items;
-	
+	const std::vector<std::shared_ptr<Location>>& getLocations() const;
+	const std::vector<std::shared_ptr<BaseItem>>& getItems() const;
+
+
 private:
 	void initializeLocations();
 	void initializeItems();
 
 	int loadLocations(const std::string& path);
 	int loadItems(const std::string& path);
+
+	std::vector<std::shared_ptr<Location>> locations;
+	std::vector<std::shared_ptr<BaseItem>> items;
 };
