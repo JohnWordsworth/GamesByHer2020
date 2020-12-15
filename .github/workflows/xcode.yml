@@ -11,7 +11,8 @@ jobs:
     name: Build the default scheme for macOS
     runs-on: macos-latest
     defaults:
-      working-directory: TextAdventure
+      run:
+        working-directory: TextAdventure
 
     steps:
       - name: Checkout
