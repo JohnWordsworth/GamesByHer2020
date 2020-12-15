@@ -55,5 +55,6 @@ NoteItem::NoteItem(const std::string& id, const std::string& title, const std::s
 
 void NoteItem::useItem()
 {
+    std::cout << "You look at the item..." << "\n";
 	std::cout << useText << "\n";
 }
