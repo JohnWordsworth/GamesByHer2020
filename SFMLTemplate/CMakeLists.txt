@@ -9,10 +9,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/game/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/game/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/game/bin")
 
-## RacingGame Project
+## SpaceRace Project
 
-project(RacingGame)
-set(EXECUTABLE "RacingGame")
+project(SpaceRace)
+set(EXECUTABLE "SpaceRace")
 
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS "source/*.cpp")
 file(GLOB_RECURSE HEADER_FILES CONFIGURE_DEPENDS "source/*.h")
