@@ -1,0 +1,1 @@
+set toolchain=E:/Data/Development/vcpkg/scripts/buildsystems/vcpkg.cmake
