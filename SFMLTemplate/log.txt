@@ -1,0 +1,110 @@
+
+E:\Data\Git\GamesByHer2020\SFMLTemplate>cd vcpkg  
+
+E:\Data\Git\GamesByHer2020\SFMLTemplate\vcpkg>bootstrap-vcpkg.bat
+
+Building vcpkg.exe ...
+
+  pch.cpp
+  archives.cpp
+  checks.cpp
+  chrono.cpp
+  cofffilereader.cpp
+  downloads.cpp
+  enums.cpp
+  files.cpp
+  hash.cpp
+  json.cpp
+  machinetype.cpp
+  parse.cpp
+  strings.cpp
+  stringview.cpp
+  system.cpp
+  system.print.cpp
+  system.process.cpp
+  unicode.cpp
+  xmlserializer.cpp
+  binarycaching.cpp
+  binaryparagraph.cpp
+  build.cpp
+  buildenvironment.cpp
+  cmakevars.cpp
+  commands.add-version.cpp
+  commands.autocomplete.cpp
+  commands.buildexternal.cpp
+  commands.cache.cpp
+  commands.ci.cpp
+  commands.ciclean.cpp
+  commands.civerifyversions.cpp
+  commands.contact.cpp
+  commands.cpp
+  commands.create.cpp
+  commands.dependinfo.cpp
+  commands.edit.cpp
+  commands.env.cpp
+  commands.fetch.cpp
+  commands.format-manifest.cpp
+  commands.hash.cpp
+  commands.info.cpp
+  commands.integrate.cpp
+  commands.list.cpp
+  commands.owns.cpp
+  commands.porthistory.cpp
+  commands.portsdiff.cpp
+  commands.search.cpp
+  commands.setinstalled.cpp
+  commands.upgrade.cpp
+  commands.upload-metrics.cpp
+  commands.version.cpp
+  commands.xvsinstances.cpp
+  configuration.cpp
+  dependencies.cpp
+  export.cpp
+  export.chocolatey.cpp
+  export.ifw.cpp
+  export.prefab.cpp
+  globalstate.cpp
+  help.cpp
+  input.cpp
+  install.cpp
+  platform-expression.cpp
+  metrics.cpp
+  packagespec.cpp
+  paragraphs.cpp
+  portfileprovider.cpp
+  postbuildlint.buildtype.cpp
+  postbuildlint.cpp
+  registries.cpp
+  remove.cpp
+  sourceparagraph.cpp
+  statusparagraph.cpp
+  statusparagraphs.cpp
+  tools.cpp
+  triplet.cpp
+  update.cpp
+  userconfig.cpp
+  vcpkgcmdarguments.cpp
+  vcpkglib.cpp
+  vcpkgpaths.cpp
+  versiondeserializers.cpp
+  versions.cpp
+  versiont.cpp
+  visualstudio.cpp
+  vcpkg.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 23224 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  vcpkg.vcxproj -> E:\Data\Git\GamesByHer2020\SFMLTemplate\vcpkg\toolsrc\windows-bootstrap\msbuild.x86.release\vcpkg.exe
+
+Building vcpkg.exe... done.
+
+Telemetry
+---------
+vcpkg collects usage data in order to help us improve your experience.
+The data collected by Microsoft is anonymous.
+You can opt-out of telemetry by re-running the bootstrap-vcpkg script with -disableMetrics,
+passing --disable-metrics to vcpkg on the command line,
+or by setting the VCPKG_DISABLE_METRICS environment variable.
+
+Read more about vcpkg telemetry at docs/about/privacy.md
