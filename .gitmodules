@@ -1,3 +1,3 @@
 [submodule "SFMLTemplate/sfml-engine"]
 	path = SFMLTemplate/sfml-engine
-	url = git@github.com:JohnWordsworth/sfml-engine.git
+	url = https://github.com/JohnWordsworth/sfml-engine.git
