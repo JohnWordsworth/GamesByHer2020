@@ -1,4 +1,6 @@
-cd vcpkg 
+#!/bin/bash
+
+cd vcpkg
 
 ./bootstrap-vcpkg.sh
 ./vcpkg install sfml
