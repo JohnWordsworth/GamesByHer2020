@@ -24,7 +24,8 @@ void TitleScene::onInitializeScene()
 	addChild(spriteNode);
 
 	std::shared_ptr<gbh::TextNode> textNode = std::make_shared<gbh::TextNode>("Space Race", m_robotoFont, 60);
-	textNode->setPosition(500, 100);
+    textNode->setOrigin(0.5f, 0.5f);
+	textNode->setPosition(640, 100);
 	textNode->setName("Title");
 	addChild(textNode);
 
@@ -32,8 +33,9 @@ void TitleScene::onInitializeScene()
 	ship->setPosition(620, 300);
 	addChild(ship);
 
-	std::shared_ptr<gbh::ShapeNode> startButton = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(200, 60)));
-	startButton->setPosition(560, 560);
+	std::shared_ptr<gbh::ShapeNode> startButton = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(1280, 60)));
+	startButton->setPosition(640, 560);
+    startButton->setOrigin(0.5f, 0.5f);
 	startButton->getShape()->setFillColor(sf::Color(0, 255, 0, 64));
 	startButton->setName("StartButton");
 	addChild(startButton);
@@ -47,7 +49,12 @@ void TitleScene::onInitializeScene()
 
 void TitleScene::onUpdate(double deltaTime)
 {
-
+    std::shared_ptr<gbh::Node> titleNode = getFirstChildWithName("Title", false);
+    
+    if (titleNode)
+    {
+        titleNode->move(0, 50.f * deltaTime);
+    }
 }
 
 
