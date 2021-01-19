@@ -53,7 +53,7 @@ void TitleScene::onUpdate(double deltaTime)
     
     if (titleNode)
     {
-        titleNode->move(0, 50.f * deltaTime);
+        titleNode->move(0, 50.f * (float)deltaTime);
     }
 }
 
