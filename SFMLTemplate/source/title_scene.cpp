@@ -62,11 +62,13 @@ void TitleScene::onMouseEvent(sf::Event& event)
 {
 	if (event.type == sf::Event::MouseButtonPressed)
 	{
-		std::shared_ptr<gbh::Node> node = this->getNodeAtViewPoint((float)event.mouseButton.x, (float)event.mouseButton.y);
+        sf::Vector2 clickPosition { (float)event.mouseButton.x, (float)event.mouseButton.y };
+        std::shared_ptr<gbh::Node> node = getNodeAtViewPoint(clickPosition);
 
-		if (node)
+		if (node->getName() == "StartButton")
 		{
 			std::cout << "Clicked On: " << node->getName() << "\n";
+            gbh::Game::getInstance().changeScene("maingame");
 		}
 	}
 }

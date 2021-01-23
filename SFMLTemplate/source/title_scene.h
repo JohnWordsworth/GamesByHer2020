@@ -10,7 +10,7 @@ protected:
 	void onInitializeScene() override;
 
 	virtual void onUpdate(double deltaTime);
-	virtual void onMouseEvent(sf::Event& event);
+	void onMouseEvent(sf::Event& event) override;
 	virtual void onShowScene();
 	virtual void onHideScene();
 
