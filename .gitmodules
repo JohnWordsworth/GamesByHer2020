@@ -1,6 +1,7 @@
 [submodule "SFMLTemplate/sfml-engine"]
 	path = SFMLTemplate/sfml-engine
 	url = https://github.com/JohnWordsworth/sfml-engine.git
+	branch = main
 [submodule "SFMLTemplate/vcpkg"]
 	path = SFMLTemplate/vcpkg
 	url = https://github.com/microsoft/vcpkg.git
