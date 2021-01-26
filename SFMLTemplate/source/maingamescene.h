@@ -25,6 +25,7 @@ private:
 	sf::Music m_gameMusic;
     
     std::shared_ptr<gbh::SpriteNode> m_ship;
+    std::shared_ptr<gbh::CameraNode> m_camera;
     
     std::shared_ptr<gbh::TextNode> m_timer;
     double m_timerValue = 0.0;

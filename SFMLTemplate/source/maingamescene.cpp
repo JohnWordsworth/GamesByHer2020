@@ -44,6 +44,16 @@ void MainGameScene::onInitializeScene()
     m_ship->getPhysicsBody()->setLinearDamping(2.0f);
     m_ship->getPhysicsBody()->setFixedRotation(true);
     addChild(m_ship);
+    
+    m_camera = std::make_shared<gbh::CameraNode>(gbh::Game::getInstance().getRenderTarget());
+    m_camera->setPosition(640, 360);
+    addChild(m_camera);
+    setCamera(m_camera);
+    
+    m_timer = std::make_shared<gbh::TextNode>("0.00", m_robotoFont, 24);
+    m_timer->setOrigin(1.0f, 1.0f);
+    m_timer->setPosition(1270, 700);
+    getOverlay().addChild(m_timer);
 }
 
 
@@ -51,6 +61,25 @@ void MainGameScene::onUpdate(double deltaTime)
 {
     //simpleMovementUpdate(deltaTime);
     advancedMovementUpdate(deltaTime);
+    
+    static const float cameraSpeed = 200.0f;
+    static const float rotateSpeed = 90.0f;
+    
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::Left)) {
+        m_camera->move(-cameraSpeed * (float)deltaTime, 0.0f);
+    }
+    
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::Right)) {
+        m_camera->move( cameraSpeed * (float)deltaTime, 0.0f);
+    }
+    
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::Up)) {
+        m_camera->move(0.0f, -cameraSpeed * (float)deltaTime);
+    }
+    
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::Down)) {
+        m_camera->move(0.0f,  cameraSpeed * (float)deltaTime);
+    }
 }
 
 
