@@ -3,7 +3,8 @@
 
 #include "sfml-engine/game.h"
 
-#include "title_scene.h"
+#include "titlescene.h"
+#include "maingamescene.h"
 
 
 int main()
@@ -11,6 +12,8 @@ int main()
 	gbh::Game& game = gbh::Game::getInstance();
 
 	game.addScene("title", std::make_shared<TitleScene>());
+    game.addScene("game", std::make_shared<MainGameScene>());
+    
 	game.run("title");
 
 	return 0;
