@@ -70,7 +70,7 @@ void TitleScene::onUpdate(double deltaTime)
     std::shared_ptr<gbh::Node> titleNode = getFirstChildWithName("Title", false);
     
     // Drift title node down the screen - just for fun
-    if (titleNode);
+    if (titleNode)
     {
         if (titleNode->getPosition().y < 300.0f)
         {
