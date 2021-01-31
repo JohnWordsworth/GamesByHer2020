@@ -1,2 +1,0 @@
-note	journal01	An Old Journal	You peak inside the old journal and it has a message inside "Beware the RED door!"
-teleport	scroll01	An Old Scroll Marked 'E'	entrance
