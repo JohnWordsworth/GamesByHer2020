@@ -1,4 +1,6 @@
 #include "maingamescene.h"
+#include"sfml-engine/game.h"
+#include "sfml-engine/mathutils.h"
 
 const std::string kTitleScreenBackground = "../assets/gfx/starfield-01.png";
 const std::string kPlayerShip = "../assets/gfx/player-ship.png";
@@ -30,4 +32,29 @@ void MainGameScene::onInitializeScene() {
     addChild(m_playerShip);
                              
     setDrawPhysicsDebug(true);
+}
+
+void MainGameScene::onUpdate(double deltaTime)
+{
+    sf::Vector2f moveDirection;
+    float accelerationForce = 2000.0f;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        moveDirection.y -= 1.0f;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+        moveDirection.y += 1.0f;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+        moveDirection.x -= 1.0f;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+        moveDirection.x += 1.0f;
+    }
+
+    moveDirection = gbh::math::normalize(moveDirection);
+    m_playerShip->getPhysicsBody()->applyForceToCenter(moveDirection*accelerationForce);
 }
