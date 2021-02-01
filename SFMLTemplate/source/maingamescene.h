@@ -5,6 +5,7 @@ class MainGameScene : public gbh::Scene {
 
 protected:
     void onInitializeScene() override;
+    virtual void onKeyboardEvent(sf::Event& event) override;
 
     virtual void onUpdate(double deltaTime) override;
     

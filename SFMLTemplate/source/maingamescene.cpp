@@ -1,6 +1,7 @@
 #include "maingamescene.h"
-#include"sfml-engine/game.h"
+#include "sfml-engine/game.h"
 #include "sfml-engine/mathutils.h"
+#include <iostream>
 
 const std::string kTitleScreenBackground = "../assets/gfx/starfield-01.png";
 const std::string kPlayerShip = "../assets/gfx/player-ship.png";
@@ -30,8 +31,7 @@ void MainGameScene::onInitializeScene() {
     m_playerShip->getPhysicsBody()->setLinearDamping(2.0f);
     m_playerShip->getPhysicsBody()->setFixedRotation(true);
     addChild(m_playerShip);
-                             
-    setDrawPhysicsDebug(true);
+
 }
 
 void MainGameScene::onUpdate(double deltaTime)
@@ -39,22 +39,37 @@ void MainGameScene::onUpdate(double deltaTime)
     sf::Vector2f moveDirection;
     float accelerationForce = 2000.0f;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+    //would be sf::Keyboard::isKeyPressed() for NON MacOs users
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::W)) {
         moveDirection.y -= 1.0f;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::S)) {
         moveDirection.y += 1.0f;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::A)) {
         moveDirection.x -= 1.0f;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::D)) {
         moveDirection.x += 1.0f;
     }
 
     moveDirection = gbh::math::normalize(moveDirection);
     m_playerShip->getPhysicsBody()->applyForceToCenter(moveDirection*accelerationForce);
+}
+
+void MainGameScene::onKeyboardEvent(sf::Event& event)
+{
+    if (event.key.code == sf::Keyboard::O)
+    {
+        std::cout << "Key pressed\n";
+        setDrawPhysicsDebug(true);
+    }
+    
+    if (event.key.code == sf::Keyboard::X)
+    {
+        setDrawPhysicsDebug(false);
+    }
 }
