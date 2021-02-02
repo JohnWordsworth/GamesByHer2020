@@ -84,12 +84,12 @@ void MainGameScene::onInitializeScene()
         node->setPosition(checkpoints[i]);
         node->setName("checkpoint");
         
-        node->setBeginContactCallback([this](const gbh::PhysicsContact& contact) {
-            if (contact.containsNode(m_ship.get()))
-            {
-                advanceCheckpoints();
-            }
-        });
+        //node->setBeginContactCallback([this](const gbh::PhysicsContact& contact) {
+        //    if (contact.containsNode(m_ship.get()))
+        //    {
+        //        advanceCheckpoints();
+        //    }
+        //});
                 
         m_checkPoints.push_back(node);
         addChild(node);
@@ -222,6 +222,20 @@ void MainGameScene::onShowScene()
 void MainGameScene::onHideScene()
 {
 	m_gameMusic.stop();
+}
+
+
+void MainGameScene::onBeginPhysicsContact(const gbh::PhysicsContact& contact)
+{
+    if (contact.containsNode(m_ship.get()))
+    {
+        gbh::Node* otherNode = contact.otherNode(m_ship.get());
+
+        if (otherNode && otherNode->getName() == "checkpoint")
+        {
+            advanceCheckpoints();
+        }
+    }
 }
 
 

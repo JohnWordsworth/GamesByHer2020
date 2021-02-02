@@ -16,6 +16,7 @@ protected:
 	void onMouseEvent(sf::Event& event) override;
     void onKeyboardEvent(sf::Event& event) override;
     void onJoystickEvent(sf::Event& event) override;
+    void onBeginPhysicsContact(const gbh::PhysicsContact& contact) override;
     
     void simpleMovementUpdate(double deltaTime);
     void advancedMovementUpdate(double deltaTime);
