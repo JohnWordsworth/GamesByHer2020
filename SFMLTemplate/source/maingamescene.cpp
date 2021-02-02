@@ -5,6 +5,7 @@
 #include "sfml-engine/spritenode.h"
 #include "sfml-engine/textnode.h"
 #include "sfml-engine/mathutils.h"
+#include "sfml-engine/texturecache.h"
 
 #include <iostream>
 
@@ -33,6 +34,13 @@ void MainGameScene::onInitializeScene()
     bgNode->setName("background");
     bgNode->setPosition(640, 360);
     addChild(bgNode);
+    
+    sf::Texture* bgTexture = gbh::TextureCache::getInstance().getTextureAtPath(kStarfield);
+    
+    if (bgTexture) {
+        bgTexture->setSmooth(true);
+        bgTexture->setRepeated(true);
+    }
     
     std::shared_ptr<gbh::Node> worldBoundary = std::make_shared<gbh::Node>();
     worldBoundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(2480, 1400)));
@@ -179,6 +187,22 @@ void MainGameScene::onKeyboardEvent(sf::Event &event)
         {
             setDrawPhysicsDebug(!getDrawPhysicsDebug());
         }
+        
+        if (event.key.code == sf::Keyboard::J)
+        {
+            m_camera->setScale(0.5f, 0.5f);
+        }
+        
+        if (event.key.code == sf::Keyboard::K)
+        {
+            m_camera->setScale(1.0f, 1.0f);
+        }
+
+        if (event.key.code == sf::Keyboard::L)
+        {
+            m_camera->setScale(2.0f, 2.0f);
+        }
+
     }
 }
 
