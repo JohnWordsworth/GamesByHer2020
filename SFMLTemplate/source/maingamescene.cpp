@@ -37,7 +37,8 @@ void MainGameScene::onInitializeScene() {
 void MainGameScene::onUpdate(double deltaTime)
 {
     sf::Vector2f moveDirection;
-    float accelerationForce = 2000.0f;
+    const float accelerationForce = 2000.0f;
+    const float degreesPerSecond = 45.0f;
 
     //would be sf::Keyboard::isKeyPressed() for NON MacOs users
     if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::W)) {
@@ -50,10 +51,12 @@ void MainGameScene::onUpdate(double deltaTime)
 
     if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::A)) {
         moveDirection.x -= 1.0f;
+        m_playerShip->rotate(-(degreesPerSecond) * deltaTime);
     }
 
     if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::D)) {
         moveDirection.x += 1.0f;
+        m_playerShip->rotate(+(degreesPerSecond) * deltaTime);
     }
 
     moveDirection = gbh::math::normalize(moveDirection);
