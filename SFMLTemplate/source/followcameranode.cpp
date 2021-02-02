@@ -2,11 +2,6 @@
 
 #include <iostream>
 
-FollowCameraNode::FollowCameraNode()
-{
-    
-}
-
 
 void FollowCameraNode::setTarget(std::shared_ptr<gbh::Node> target)
 {

@@ -5,9 +5,6 @@
 class FollowCameraNode : public gbh::CameraNode
 {
 public:
-    FollowCameraNode();
-    virtual ~FollowCameraNode() { }
-    
     void setTarget(std::shared_ptr<gbh::Node> target);
     
 protected:
