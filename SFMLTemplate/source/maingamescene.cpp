@@ -9,6 +9,7 @@ const std::string kAsteroid01 = "../assets/gfx/asteroid-small-01.png";
 
 void MainGameScene::onInitializeScene() {
     std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
+    spriteMainBg->setPosition(640, 360);
     spriteMainBg->setName("GameBackground");
     addChild(spriteMainBg);
 

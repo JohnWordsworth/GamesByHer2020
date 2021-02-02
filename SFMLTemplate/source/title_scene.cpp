@@ -24,6 +24,7 @@ void TitleScene::onInitializeScene()
 
     std::shared_ptr<gbh::SpriteNode> spriteNode = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
     spriteNode->setName("Background");
+    spriteNode->setPosition(640, 360);
     addChild(spriteNode);
 
     std::shared_ptr<gbh::TextNode> textNode = std::make_shared<gbh::TextNode>("SPACE RACE", m_orbitronFont, 60);
