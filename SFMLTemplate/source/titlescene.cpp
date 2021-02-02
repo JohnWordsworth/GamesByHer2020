@@ -83,7 +83,7 @@ void TitleScene::onUpdate(double deltaTime)
     {
         if (titleNode->getPosition().y < 300.0f)
         {
-            titleNode->move(0, 50.f * deltaTime);
+            titleNode->move(0, 50.f * (float)deltaTime);
         }
         
         const float degreesPerSecond = 45.0f;
