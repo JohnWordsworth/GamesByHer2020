@@ -5,6 +5,7 @@
 
 const std::string kTitleScreenBackground = "../assets/gfx/starfield-01.png";
 const std::string kPlayerShip = "../assets/gfx/player-ship.png";
+const std::string kAsteroid01 = "../assets/gfx/asteroid-small-01.png";
 
 void MainGameScene::onInitializeScene() {
     std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
@@ -31,6 +32,18 @@ void MainGameScene::onInitializeScene() {
     m_playerShip->getPhysicsBody()->setLinearDamping(2.0f);
     m_playerShip->getPhysicsBody()->setFixedRotation(true);
     addChild(m_playerShip);
+    
+    //Add obstacle asteroid
+    m_asteroidObstacle01 = std::make_shared<gbh::SpriteNode>(kAsteroid01);
+    m_asteroidObstacle01->setPosition(300, 500);
+    m_asteroidObstacle01->setOrigin(0.5f, 0.5f);
+    
+    std::shared_ptr<gbh::PhysicsBody> body = getPhysicsWorld()->createBox(sf::Vector2f(20.f, 20.0f));
+    body->setType(gbh::PhysicsBodyType::Static);
+    body->setLinearDamping(0.1f);
+
+    m_asteroidObstacle01->setPhysicsBody(body);
+    addChild(m_asteroidObstacle01);
 
 }
 
@@ -67,7 +80,6 @@ void MainGameScene::onKeyboardEvent(sf::Event& event)
 {
     if (event.key.code == sf::Keyboard::O)
     {
-        std::cout << "Key pressed\n";
         setDrawPhysicsDebug(true);
     }
     

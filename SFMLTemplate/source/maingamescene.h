@@ -11,4 +11,5 @@ protected:
     
 private:
     std::shared_ptr<gbh::SpriteNode> m_playerShip;
+    std::shared_ptr<gbh::SpriteNode> m_asteroidObstacle01;
 };
