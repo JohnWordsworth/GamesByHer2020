@@ -22,14 +22,25 @@ void FollowCameraNode::onUpdate(double deltaTime)
 
     float xDifference = m_target->getPosition().x - this->getPosition().x;
     float yDifference = m_target->getPosition().y - this->getPosition().y;
+    
+    float xLimit = 250;
+    float yLimit = 150;
 
-    if (xDifference > 300 || xDifference < -300) {
-        float distance = (float)deltaTime * xDifference;
-        move(distance, 0);
+    if (xDifference > xLimit)
+    {
+        move((float)deltaTime * 2.0f * (xDifference - xLimit), 0);
     }
-
-    if (yDifference > 200 || yDifference < -200) {
-        float distance = (float)deltaTime * yDifference;
-        move(0, distance);
+    else if (xDifference < -xLimit)
+    {
+        move((float)deltaTime * 2.0f * (xDifference + xLimit), 0);
+    }
+    
+    if (yDifference > yLimit)
+    {
+        move(0, (float)deltaTime * 2.0f * (yDifference - yLimit));
+    }
+    else if (yDifference < -yLimit)
+    {
+        move(0, (float)deltaTime * 2.0f * (yDifference + yLimit));
     }
 }
