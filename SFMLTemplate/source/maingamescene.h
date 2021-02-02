@@ -1,6 +1,9 @@
 #pragma once 
 
+#include "followcameranode.h"
+
 #include "sfml-engine/scene.h"
+
 #include <SFML/Audio.hpp>
 
 
@@ -19,13 +22,18 @@ protected:
     
 	void onShowScene() override;
 	void onHideScene() override;
+    
+    void advanceCheckpoints();
 
 private:
 	sf::Font m_robotoFont;
 	sf::Music m_gameMusic;
     
     std::shared_ptr<gbh::SpriteNode> m_ship;
-    std::shared_ptr<gbh::CameraNode> m_camera;
+    std::shared_ptr<FollowCameraNode> m_camera;
+    
+    std::vector<std::shared_ptr<gbh::SpriteNode>> m_checkPoints;
+    int m_currentCheckpoint = -1;
     
     std::shared_ptr<gbh::TextNode> m_timer;
     double m_timerValue = 0.0;

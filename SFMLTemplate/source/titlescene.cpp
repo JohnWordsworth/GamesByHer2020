@@ -21,13 +21,15 @@ void TitleScene::onInitializeScene()
     
     createPhysicsWorld(sf::Vector2f(0.0f, -9.81f));
     setDrawPhysicsDebug(true);
-
+    setDebugPhysicsEvents(true);
+    
 	std::shared_ptr<gbh::SpriteNode> bgNode = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
     bgNode->setName("Background");
     bgNode->setPosition(640, 360);
 	addChild(bgNode);
     
     std::shared_ptr<gbh::Node> worldBoundary = std::make_shared<gbh::Node>();
+    worldBoundary->setName("WorldBoundary");
     worldBoundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(1240, 700)));
     worldBoundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
     worldBoundary->setPosition(640, 360);
@@ -39,10 +41,17 @@ void TitleScene::onInitializeScene()
 	addChild(textNode);
 
 	m_ship = std::make_shared<gbh::SpriteNode>(kPlayerShip);
+    m_ship->setName("PlayerShip");
     m_ship->setPosition(640, 360);
     m_ship->setOrigin(0.5f, 0.5f);
     m_ship->setPhysicsBody(getPhysicsWorld()->createBox(sf::Vector2f(80.f, 120.f)));
     m_ship->getPhysicsBody()->setType(gbh::PhysicsBodyType::Dynamic);
+    
+    m_ship->setBeginContactCallback([this] (const gbh::PhysicsContact& contact) {
+        std::cout << "Collided With: " << contact.otherNode(m_ship.get())->getName() << "\n";
+        m_ship->setColor(sf::Color::Yellow);
+    });
+    
 	addChild(m_ship);
 
 	std::shared_ptr<gbh::ShapeNode> startButton = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(1280, 60)));
@@ -127,6 +136,12 @@ void TitleScene::onKeyboardEvent(sf::Event &event)
             gbh::Game::getInstance().changeScene("game");
         }
     }
+}
+
+
+void TitleScene::onBeginPhysicsContact(const gbh::PhysicsContact& contact)
+{
+
 }
 
 

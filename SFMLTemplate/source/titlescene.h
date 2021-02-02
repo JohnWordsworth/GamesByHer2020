@@ -12,6 +12,8 @@ protected:
 	void onUpdate(double deltaTime) override;
 	void onMouseEvent(sf::Event& event) override;
     void onKeyboardEvent(sf::Event& event) override;
+    void onBeginPhysicsContact(const gbh::PhysicsContact& contact) override;
+    
 	void onShowScene() override;
 	void onHideScene() override;
 
