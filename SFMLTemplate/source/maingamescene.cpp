@@ -34,16 +34,19 @@ void MainGameScene::onInitializeScene() {
     m_playerShip->getPhysicsBody()->setFixedRotation(true);
     addChild(m_playerShip);
     
-    //Add obstacle asteroid
+    //add dynamic asteroid
     m_asteroidObstacle01 = std::make_shared<gbh::SpriteNode>(kAsteroid01);
-    m_asteroidObstacle01->setPosition(300, 500);
     m_asteroidObstacle01->setOrigin(0.5f, 0.5f);
+    m_asteroidObstacle01->setPosition(830, 150);
+    m_asteroidObstacle01->setName("Asteroid2");
     
     std::shared_ptr<gbh::PhysicsBody> body = getPhysicsWorld()->createBox(sf::Vector2f(20.f, 20.0f));
-    body->setType(gbh::PhysicsBodyType::Static);
-    body->setLinearDamping(0.1f);
+    body->setType(gbh::PhysicsBodyType::Dynamic);
+    body->setLinearDamping(20.0f);
 
     m_asteroidObstacle01->setPhysicsBody(body);
+    m_asteroidObstacle01->getPhysicsBody()->setAngularDamping(0);
+    m_asteroidObstacle01->getPhysicsBody()->applyTorque(20.0f, true);
     addChild(m_asteroidObstacle01);
 
 }
