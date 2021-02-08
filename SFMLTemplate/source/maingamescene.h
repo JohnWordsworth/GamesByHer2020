@@ -9,10 +9,15 @@ protected:
     virtual void onKeyboardEvent(sf::Event& event) override;
 
     virtual void onUpdate(double deltaTime) override;
+    virtual void onBeginPhysicsContact(const gbh::PhysicsContact& contact) override;
     
 private:
+    void advancedCheckPoints();
     std::shared_ptr<gbh::SpriteNode> m_playerShip;
     std::shared_ptr<FollowCameraNode> m_followCamera;
+
+    std::vector<std::shared_ptr<gbh::SpriteNode>> m_checkPoints;
+    int m_currentCheckPoint = -1;
     
     std::shared_ptr<gbh::SpriteNode> m_asteroidObstacle01;
 };
