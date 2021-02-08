@@ -48,7 +48,14 @@ void MainGameScene::onInitializeScene() {
     m_asteroidObstacle01->getPhysicsBody()->setAngularDamping(0);
     m_asteroidObstacle01->getPhysicsBody()->applyTorque(20.0f, true);
     addChild(m_asteroidObstacle01);
+    
+    //initialize camera
+    m_followCamera = std::make_shared<FollowCameraNode>();
+    m_followCamera->setTarget(m_playerShip);
+    m_followCamera->setPosition(640, 360);
 
+    addChild(m_followCamera);
+    setCamera(m_followCamera);
 }
 
 void MainGameScene::onUpdate(double deltaTime)
