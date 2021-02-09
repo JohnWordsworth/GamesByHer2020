@@ -157,6 +157,7 @@ void MainGameScene::advancedCheckPoints()
     }
     else
     {
+        m_courseFinished = true;
         std::cout << "Completed Course! \n";
     }
 }
@@ -165,9 +166,12 @@ void MainGameScene::onUpdate(double deltaTime)
 {
     //add time to timer
     m_playerTime += deltaTime;
-    
-    float currentTime = floor(m_playerTime * 10) / 10;
-    m_timerText->setString(std::to_string(currentTime));
+
+    if (m_courseFinished == false)
+    {
+        float currentTime = floor(m_playerTime * 10) / 10;
+        m_timerText->setString(std::to_string(currentTime));
+    }
 
     //player movement
     sf::Vector2f moveDirection;
@@ -199,13 +203,24 @@ void MainGameScene::onUpdate(double deltaTime)
 
 void MainGameScene::onKeyboardEvent(sf::Event& event)
 {
-    if (event.key.code == sf::Keyboard::O)
+    if (event.type == sf::Event::KeyPressed)
     {
-        setDrawPhysicsDebug(true);
-    }
-    
-    if (event.key.code == sf::Keyboard::X)
-    {
-        setDrawPhysicsDebug(false);
+        if (event.key.code == sf::Keyboard::Space)
+        {
+            if (m_courseFinished)
+            {
+                gbh::Game::getInstance().changeScene("title");
+            }
+        }
+        
+        if (event.key.code == sf::Keyboard::O)
+        {
+            setDrawPhysicsDebug(true);
+        }
+        
+        if (event.key.code == sf::Keyboard::X)
+        {
+            setDrawPhysicsDebug(false);
+        }
     }
 }

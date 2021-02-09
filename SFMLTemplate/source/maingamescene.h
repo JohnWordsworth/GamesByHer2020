@@ -25,6 +25,7 @@ private:
     std::vector<std::shared_ptr<gbh::SpriteNode>> m_checkPoints;
     int m_currentCheckPoint = -1;
     double m_playerTime;
+    bool m_courseFinished = false;
     
     std::shared_ptr<gbh::SpriteNode> m_asteroidObstacle01;
     sf::Font m_orbitronFont;
