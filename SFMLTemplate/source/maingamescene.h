@@ -11,6 +11,8 @@ class MainGameScene : public gbh::Scene
 {
 protected:
 	void onInitializeScene() override;
+    void onShowScene() override;
+    void onHideScene() override;
 
 	void onUpdate(double deltaTime) override;
 	void onMouseEvent(sf::Event& event) override;
@@ -18,11 +20,10 @@ protected:
     void onJoystickEvent(sf::Event& event) override;
     void onBeginPhysicsContact(const gbh::PhysicsContact& contact) override;
     
+    void loadLevel(const std::string& filename);
+
     void simpleMovementUpdate(double deltaTime);
     void advancedMovementUpdate(double deltaTime);
-    
-	void onShowScene() override;
-	void onHideScene() override;
     
     void advanceCheckpoints();
 

@@ -7,8 +7,9 @@
 #include "sfml-engine/mathutils.h"
 #include "sfml-engine/texturecache.h"
 
+#include <nlohmann/json.hpp>
 #include <iostream>
-
+#include <fstream>
 
 const std::string kGameMusic = "../assets/music/maingame.ogg";
 const std::string kGameFont = "../assets/fonts/roboto-regular.ttf";
@@ -64,48 +65,33 @@ void MainGameScene::onInitializeScene()
     addChild(m_camera);
     setCamera(m_camera);
     
-    std::vector<sf::Vector2f> checkpoints = {
-        sf::Vector2f(520, 320),
-        sf::Vector2f(100, 20),
-        sf::Vector2f(-300, -240),
-        sf::Vector2f(0, -320),
-        sf::Vector2f(-540, -320),
-        sf::Vector2f(-660, 0),
-        sf::Vector2f(-300, 440),
-    };
-    
-    for(int i = 0; i < checkpoints.size(); ++i)
-    {
-        std::shared_ptr<gbh::SpriteNode> node = std::make_shared<gbh::SpriteNode>(kCheckpoint);
-        node->setColor(kInactiveCheckpoint);
-        node->setPhysicsBody(getPhysicsWorld()->createCircle(50));
-        node->getPhysicsBody()->makeSensor();
-        node->getPhysicsBody()->setEnabled(false);
-        node->setPosition(checkpoints[i]);
-        node->setName("checkpoint");
-        
-        //node->setBeginContactCallback([this](const gbh::PhysicsContact& contact) {
-        //    if (contact.containsNode(m_ship.get()))
-        //    {
-        //        advanceCheckpoints();
-        //    }
-        //});
-                
-        m_checkPoints.push_back(node);
-        addChild(node);
-    }
-    
     m_timer = std::make_shared<gbh::TextNode>("0.00", m_robotoFont, 24);
     m_timer->setOrigin(1.0f, 1.0f);
     m_timer->setPosition(1270, 700);
     getOverlay().addChild(m_timer);
-    
+}
+
+
+void MainGameScene::onShowScene()
+{
+    loadLevel("../assets/levels/level_01.json");
     advanceCheckpoints();
+    
+    m_gameMusic.play();
+}
+
+
+void MainGameScene::onHideScene()
+{
+    m_gameMusic.stop();
 }
 
 
 void MainGameScene::onUpdate(double deltaTime)
 {
+    m_timerValue += deltaTime;
+    m_timer->setString(std::to_string(m_timerValue));
+    
     advancedMovementUpdate(deltaTime);
     
     static const float cameraSpeed = 200.0f;
@@ -125,6 +111,54 @@ void MainGameScene::onUpdate(double deltaTime)
     
     if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::Down)) {
         m_camera->move(0.0f,  cameraSpeed * (float)deltaTime);
+    }
+}
+
+
+void MainGameScene::loadLevel(const std::string &filename)
+{
+    std::ifstream file(filename);
+    nlohmann::json jsonFile;
+    
+    try
+    {
+        jsonFile = nlohmann::json::parse(file);
+    }
+    catch(const std::exception& ex)
+    {
+        std::cout << "Failed to load level from file: " << filename << ": " << ex.what() << "\n";
+        return;
+    }
+    
+    nlohmann::json checkpoints = jsonFile["checkpoints"];
+    
+    if (checkpoints.is_array())
+    {
+        for(int i = 0; i < checkpoints.size(); ++i)
+        {
+            float x = checkpoints[i]["x"].get<float>();
+            float y = checkpoints[i]["y"].get<float>();
+
+            std::shared_ptr<gbh::SpriteNode> node = std::make_shared<gbh::SpriteNode>(kCheckpoint);
+            node->setColor(kInactiveCheckpoint);
+            node->setPhysicsBody(getPhysicsWorld()->createCircle(50));
+            node->getPhysicsBody()->makeSensor();
+            node->getPhysicsBody()->setEnabled(false);
+            node->setPosition(x, y);
+            node->setName("checkpoint");
+                
+            node->setBeginContactCallback([this](const gbh::PhysicsContact& contact) {
+                if (contact.containsNode(m_ship.get()))
+                {
+                    advanceCheckpoints();
+                }
+            });
+                        
+            m_checkPoints.push_back(node);
+            addChild(node);
+        }
+        
+        m_currentCheckpoint = -1;
     }
 }
 
@@ -213,35 +247,22 @@ void MainGameScene::onJoystickEvent(sf::Event &event)
 }
 
 
-void MainGameScene::onShowScene()
-{
-	m_gameMusic.play();
-}
-
-
-void MainGameScene::onHideScene()
-{
-	m_gameMusic.stop();
-}
-
-
 void MainGameScene::onBeginPhysicsContact(const gbh::PhysicsContact& contact)
 {
-    if (contact.containsNode(m_ship.get()))
-    {
-        gbh::Node* otherNode = contact.otherNode(m_ship.get());
-
-        if (otherNode && otherNode->getName() == "checkpoint")
-        {
-            advanceCheckpoints();
-        }
-    }
+//    if (contact.containsNode(m_ship.get()))
+//    {
+//        gbh::Node* otherNode = contact.otherNode(m_ship.get());
+//
+//        if (otherNode && otherNode->getName() == "checkpoint")
+//        {
+//            advanceCheckpoints();
+//        }
+//    }
 }
 
 
 void MainGameScene::advanceCheckpoints()
 {
-    
     if (m_currentCheckpoint >= 0 && m_currentCheckpoint < m_checkPoints.size())
     {
         m_checkPoints[m_currentCheckpoint]->setColor(kDoneCheckpoint);
