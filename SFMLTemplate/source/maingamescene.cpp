@@ -14,6 +14,7 @@ static const sf::Color kNextCheckpoint = sf::Color(64, 64, 255, 192);
 static const sf::Color kDoneCheckpoint = sf::Color(64, 255, 64, 128);
 
 void MainGameScene::onInitializeScene() {
+    //2048x02048 bg
     std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
     spriteMainBg->setPosition(640, 360);
     spriteMainBg->setName("GameBackground");
