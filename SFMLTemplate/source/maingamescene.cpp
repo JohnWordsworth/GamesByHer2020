@@ -1,6 +1,7 @@
 #include "maingamescene.h"
 #include "sfml-engine/game.h"
 #include "sfml-engine/mathutils.h"
+#include "sfml-engine/textnode.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
@@ -9,6 +10,7 @@ const std::string kTitleScreenBackground = "../assets/gfx/starfield-01.png";
 const std::string kPlayerShip = "../assets/gfx/player-ship.png";
 const std::string kAsteroid01 = "../assets/gfx/asteroid-small-01.png";
 const std::string kCheckpoint = "../assets/gfx/checkpoint.png";
+const std::string kTitleScreenFont = "../assets/fonts/orbitron.ttf";
 
 //Checkpoint colors
 static const sf::Color kInactiveCheckpoint = sf::Color(255, 255, 255, 64);
@@ -16,6 +18,8 @@ static const sf::Color kNextCheckpoint = sf::Color(64, 64, 255, 192);
 static const sf::Color kDoneCheckpoint = sf::Color(64, 255, 64, 128);
 
 void MainGameScene::onInitializeScene() {
+    m_orbitronFont.loadFromFile(kTitleScreenFont);
+
     //2048x02048 bg
     std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
     spriteMainBg->setPosition(640, 360);
@@ -65,6 +69,12 @@ void MainGameScene::onInitializeScene() {
 
     addChild(m_followCamera);
     setCamera(m_followCamera);
+    
+    //add timer
+    m_timerText = std::make_shared<gbh::TextNode>("0", m_orbitronFont, 24);
+    m_timerText->setOrigin(1.0f, 1.0f);
+    m_timerText->setPosition(1270, 700);
+    getOverlay().addChild(m_timerText);
 }
 
 void MainGameScene::onShowScene()
@@ -153,6 +163,13 @@ void MainGameScene::advancedCheckPoints()
 
 void MainGameScene::onUpdate(double deltaTime)
 {
+    //add time to timer
+    m_playerTime += deltaTime;
+    
+    float currentTime = floor(m_playerTime * 10) / 10;
+    m_timerText->setString(std::to_string(currentTime));
+
+    //player movement
     sf::Vector2f moveDirection;
     const float accelerationForce = 2000.0f;
     const float degreesPerSecond = 45.0f;
