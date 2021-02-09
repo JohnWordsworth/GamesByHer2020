@@ -11,6 +11,10 @@ protected:
     virtual void onUpdate(double deltaTime) override;
     virtual void onBeginPhysicsContact(const gbh::PhysicsContact& contact) override;
     
+    void onShowScene() override;
+
+    void loadLevel(const std::string& fileName);
+    
 private:
     void advancedCheckPoints();
     std::shared_ptr<gbh::SpriteNode> m_playerShip;

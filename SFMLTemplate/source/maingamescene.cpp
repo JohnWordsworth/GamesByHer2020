@@ -1,6 +1,8 @@
 #include "maingamescene.h"
 #include "sfml-engine/game.h"
 #include "sfml-engine/mathutils.h"
+#include <nlohmann/json.hpp>
+#include <fstream>
 #include <iostream>
 
 const std::string kTitleScreenBackground = "../assets/gfx/starfield-01.png";
@@ -63,34 +65,53 @@ void MainGameScene::onInitializeScene() {
 
     addChild(m_followCamera);
     setCamera(m_followCamera);
+}
+
+void MainGameScene::onShowScene()
+{
+    loadLevel("../assets/json/level01.json");
+    advancedCheckPoints();
+}
+
+void MainGameScene::loadLevel(const std::string &filename)
+{
+    std::ifstream file(filename);
+    nlohmann::json jsonFile;
     
-    //initialize checkpoints
-
-    std::vector<sf::Vector2f> checkPointPositions = {
-        sf::Vector2f(640.0f, 720.0f),
-        sf::Vector2f(1240.0f, 200.0f),
-        sf::Vector2f(80.0f, 400.0f),
-    };
-
-    for(int i = 0; i < checkPointPositions.size(); ++i)
+    try
     {
-        sf::Vector2f position = checkPointPositions[i];
-
-        std::shared_ptr<gbh::SpriteNode> node = std::make_shared<gbh::SpriteNode>(kCheckpoint);
-        node->setColor(kInactiveCheckpoint);
-        node->setPhysicsBody(getPhysicsWorld()->createCircle(50));
-        node->getPhysicsBody()->makeSensor();
-        node->getPhysicsBody()->setEnabled(false);
-        node->setPosition(checkPointPositions[i]);
-        node->setName("checkpoint");
-
-        m_checkPoints.push_back(node);
-        addChild(node);
+        jsonFile = nlohmann::json::parse(file);
+    }
+    catch(const std::exception& ex)
+    {
+        std::cout << "Failed to load level from file: " << filename << ": " << ex.what() << "\n";
+        return;
     }
     
-    //Call function to initialize
-    advancedCheckPoints();
+    //initialize checkpoints
+    nlohmann::json checkPoints = jsonFile["checkpoints"];
     
+    if (checkPoints.is_array())
+    {
+        for(int i = 0; i < checkPoints.size(); ++i)
+        {
+            float x = checkPoints[i]["x"].get<float>();
+            float y = checkPoints[i]["y"].get<float>();
+
+            std::shared_ptr<gbh::SpriteNode> node = std::make_shared<gbh::SpriteNode>(kCheckpoint);
+            node->setColor(kInactiveCheckpoint);
+            node->setPhysicsBody(getPhysicsWorld()->createCircle(50));
+            node->getPhysicsBody()->makeSensor();
+            node->getPhysicsBody()->setEnabled(false);
+            node->setPosition(x, y);
+            node->setName("checkpoint");
+
+            m_checkPoints.push_back(node);
+            addChild(node);
+        }
+        
+        m_currentCheckPoint = -1;
+    }
 }
 
 void MainGameScene::onBeginPhysicsContact(const gbh::PhysicsContact& contact)
