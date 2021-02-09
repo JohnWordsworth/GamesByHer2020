@@ -6,8 +6,15 @@
 const std::string kTitleScreenBackground = "../assets/gfx/starfield-01.png";
 const std::string kPlayerShip = "../assets/gfx/player-ship.png";
 const std::string kAsteroid01 = "../assets/gfx/asteroid-small-01.png";
+const std::string kCheckpoint = "../assets/gfx/checkpoint.png";
+
+//Checkpoint colors
+static const sf::Color kInactiveCheckpoint = sf::Color(255, 255, 255, 64);
+static const sf::Color kNextCheckpoint = sf::Color(64, 64, 255, 192);
+static const sf::Color kDoneCheckpoint = sf::Color(64, 255, 64, 128);
 
 void MainGameScene::onInitializeScene() {
+    //2048x02048 bg
     std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
     spriteMainBg->setPosition(640, 360);
     spriteMainBg->setName("GameBackground");
@@ -48,7 +55,79 @@ void MainGameScene::onInitializeScene() {
     m_asteroidObstacle01->getPhysicsBody()->setAngularDamping(0);
     m_asteroidObstacle01->getPhysicsBody()->applyTorque(20.0f, true);
     addChild(m_asteroidObstacle01);
+    
+    //initialize camera
+    m_followCamera = std::make_shared<FollowCameraNode>();
+    m_followCamera->setTarget(m_playerShip);
+    m_followCamera->setPosition(640, 360);
 
+    addChild(m_followCamera);
+    setCamera(m_followCamera);
+    
+    //initialize checkpoints
+
+    std::vector<sf::Vector2f> checkPointPositions = {
+        sf::Vector2f(640.0f, 720.0f),
+        sf::Vector2f(1240.0f, 200.0f),
+        sf::Vector2f(80.0f, 400.0f),
+    };
+
+    for(int i = 0; i < checkPointPositions.size(); ++i)
+    {
+        sf::Vector2f position = checkPointPositions[i];
+
+        std::shared_ptr<gbh::SpriteNode> node = std::make_shared<gbh::SpriteNode>(kCheckpoint);
+        node->setColor(kInactiveCheckpoint);
+        node->setPhysicsBody(getPhysicsWorld()->createCircle(50));
+        node->getPhysicsBody()->makeSensor();
+        node->getPhysicsBody()->setEnabled(false);
+        node->setPosition(checkPointPositions[i]);
+        node->setName("checkpoint");
+
+        m_checkPoints.push_back(node);
+        addChild(node);
+    }
+    
+    //Call function to initialize
+    advancedCheckPoints();
+    
+}
+
+void MainGameScene::onBeginPhysicsContact(const gbh::PhysicsContact& contact)
+{
+    if (contact.containsNode(m_playerShip.get()))
+    {
+        gbh::Node* otherNode = contact.otherNode(m_playerShip.get());
+
+        if (otherNode && otherNode->getName() == "checkpoint")
+        {
+            advancedCheckPoints();
+        }
+    }
+}
+
+void MainGameScene::advancedCheckPoints()
+{
+    if (m_currentCheckPoint >= 0 && m_currentCheckPoint < m_checkPoints.size())
+    {
+        m_checkPoints[m_currentCheckPoint]->setColor(kDoneCheckpoint);
+        m_checkPoints[m_currentCheckPoint]->getPhysicsBody()->setEnabled(false);
+        m_currentCheckPoint++;
+    }
+    else
+    {
+        m_currentCheckPoint = 0;
+    }
+    
+    if (m_currentCheckPoint < m_checkPoints.size())
+    {
+        m_checkPoints[m_currentCheckPoint]->setColor(kNextCheckpoint);
+        m_checkPoints[m_currentCheckPoint]->getPhysicsBody()->setEnabled(true);
+    }
+    else
+    {
+        std::cout << "Completed Course! \n";
+    }
 }
 
 void MainGameScene::onUpdate(double deltaTime)
