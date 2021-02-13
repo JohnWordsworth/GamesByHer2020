@@ -31,7 +31,7 @@ void MainGameScene::onInitializeScene() {
 
     // Add a boundary that is almost as big as the screen (1270, 710) and centered.
     std::shared_ptr<gbh::Node> boundary = std::make_shared<gbh::Node>();
-    boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(1270, 710)));
+    boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(2048, 2048)));
     boundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
     boundary->setPosition(1280.0f/2.0f, 720.0f/2.0f);
     addChild(boundary);
@@ -159,6 +159,7 @@ void MainGameScene::advancedCheckPoints()
     {
         m_courseFinished = true;
         std::cout << "Completed Course! \n";
+        endGameScene();
     }
 }
 
@@ -223,4 +224,14 @@ void MainGameScene::onKeyboardEvent(sf::Event& event)
             setDrawPhysicsDebug(false);
         }
     }
+}
+
+void MainGameScene::endGameScene() {
+    //2048x02048 bg
+    //std::shared_ptr<gbh::ShapeNode> endScene = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(2048, 2048)));
+    //endScene->setPosition(660, 590);
+    //endScene->setOrigin(0.5, 0.5);
+    //endScene->getShape()->setFillColor(sf::Color(255,255,255, 1));
+    //getOverlay().addChild(endScene);
+    std::cout << "End scene\n";
 }
