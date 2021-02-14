@@ -1,11 +1,14 @@
 #pragma once
 #include "sfml-engine/scene.h"
 #include "cameranode.h"
+#include "levelselectscene.h"
 
 class MainGameScene : public gbh::Scene
 {
 public:
     void endGameScene();
+    
+    LevelSelectScene levelSelected;
 
 protected:
     void onInitializeScene() override;

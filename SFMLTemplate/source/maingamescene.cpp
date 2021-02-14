@@ -79,7 +79,12 @@ void MainGameScene::onInitializeScene() {
 
 void MainGameScene::onShowScene()
 {
-    loadLevel("../assets/json/level01.json");
+    const std::string pathBegin = "../assets/json/level0";
+    const std::string pathEnd = ".json";
+    
+    std::string fullPath = pathBegin + std::to_string(*levelSelected.m_levelSelected) + pathEnd;
+
+    loadLevel(fullPath);
     advancedCheckPoints();
 }
 

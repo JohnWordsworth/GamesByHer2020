@@ -101,7 +101,7 @@ void TitleScene::onMouseEvent(sf::Event& event)
 
         if (node->getName() == "StartButton")
         {
-            gbh::Game::getInstance().changeScene("maingame");
+            gbh::Game::getInstance().changeScene("levels");
         }
         else if (node->getName() == "CreditsButton")
         {
