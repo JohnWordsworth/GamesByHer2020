@@ -227,11 +227,16 @@ void MainGameScene::onKeyboardEvent(sf::Event& event)
 }
 
 void MainGameScene::endGameScene() {
-    //2048x02048 bg
-    //std::shared_ptr<gbh::ShapeNode> endScene = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(2048, 2048)));
-    //endScene->setPosition(660, 590);
-    //endScene->setOrigin(0.5, 0.5);
-    //endScene->getShape()->setFillColor(sf::Color(255,255,255, 1));
-    //getOverlay().addChild(endScene);
-    std::cout << "End scene\n";
+    std::shared_ptr<gbh::ShapeNode> endScene = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(1270, 710)));
+    endScene->setPosition(640, 360);
+    endScene->getShape()->setFillColor(sf::Color(0, 0, 0, 128));
+    getOverlay().addChild(endScene);
+    
+    std::shared_ptr<gbh::TextNode> endSceneTxt = std::make_shared<gbh::TextNode>("YOU COMPLETED THE COURSE", m_orbitronFont, 60);
+    endSceneTxt->setPosition(650, 300);
+    getOverlay().addChild(endSceneTxt);
+    
+    std::shared_ptr<gbh::TextNode> endSceneTxtPrompt = std::make_shared<gbh::TextNode>("Press spacebar to continue", m_orbitronFont, 60);
+    endSceneTxtPrompt->setPosition(650, 450);
+    getOverlay().addChild(endSceneTxtPrompt);
 }
