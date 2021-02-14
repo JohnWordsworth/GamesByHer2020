@@ -7,8 +7,9 @@ class MainGameScene : public gbh::Scene
 {
 public:
     void endGameScene();
+    static MainGameScene& InstanceOf();
     
-    LevelSelectScene levelSelected;
+    LevelSelectScene levelSelect;
 
 protected:
     void onInitializeScene() override;

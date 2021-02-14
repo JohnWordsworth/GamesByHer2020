@@ -1,4 +1,5 @@
 #include "maingamescene.h"
+#include "levelselectscene.h"
 #include "sfml-engine/game.h"
 #include "sfml-engine/mathutils.h"
 #include "sfml-engine/textnode.h"
@@ -16,6 +17,11 @@ const std::string kTitleScreenFont = "../assets/fonts/orbitron.ttf";
 static const sf::Color kInactiveCheckpoint = sf::Color(255, 255, 255, 64);
 static const sf::Color kNextCheckpoint = sf::Color(64, 64, 255, 192);
 static const sf::Color kDoneCheckpoint = sf::Color(64, 255, 64, 128);
+
+MainGameScene& MainGameScene::InstanceOf() {
+    static MainGameScene mainGame;
+    return mainGame;
+}
 
 void MainGameScene::onInitializeScene() {
     m_orbitronFont.loadFromFile(kTitleScreenFont);
@@ -81,10 +87,15 @@ void MainGameScene::onShowScene()
 {
     const std::string pathBegin = "../assets/json/level0";
     const std::string pathEnd = ".json";
+    std::string fullPath;
     
-    std::string fullPath = pathBegin + std::to_string(*levelSelected.m_levelSelected) + pathEnd;
+    if (MainGameScene::InstanceOf().levelSelect.m_levelSelected != nullptr)
+    {
+        std::string fullPath = pathBegin + std::to_string(*MainGameScene::InstanceOf().levelSelect.m_levelSelected) + pathEnd;
+        
+        loadLevel(fullPath);
+    }
 
-    loadLevel(fullPath);
     advancedCheckPoints();
 }
 
