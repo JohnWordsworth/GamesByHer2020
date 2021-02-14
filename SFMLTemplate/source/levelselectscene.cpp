@@ -22,30 +22,32 @@ void LevelSelectScene::onInitializeScene()
 
     std::shared_ptr<gbh::TextNode> textNode = std::make_shared<gbh::TextNode>("Select level", m_orbitronFont, 60);
     textNode->setPosition(650, 100);
-    textNode->setName("Title");
+    textNode->setName("LevelSelect");
     addChild(textNode);
 
-    std::shared_ptr<gbh::ShapeNode> startButton = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(200, 60)));
-    startButton->setPosition(660, 500);
-    startButton->getShape()->setOutlineThickness(0.5);
-    startButton->setName("Level01Button");
-    addChild(startButton);
+    std::shared_ptr<gbh::ShapeNode> level01Btn = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(200, 60)));
+    level01Btn->setPosition(660, 500);
+    level01Btn->getShape()->setOutlineThickness(0.5);
+    level01Btn->getShape()->setFillColor(sf::Color(0, 255, 0, 1.0));
+    level01Btn->setName("Level01Button");
+    addChild(level01Btn);
 
-    std::shared_ptr<gbh::TextNode> startNode = std::make_shared<gbh::TextNode>("Level 01", m_orbitronFont);
-    startNode->setPosition(95, 20);
-    startNode->setName("Level01");
-    startButton->addChild(startNode);
+    std::shared_ptr<gbh::TextNode> level01Txt = std::make_shared<gbh::TextNode>("Level 01", m_orbitronFont);
+    level01Txt->setPosition(95, 20);
+    level01Txt->setName("Level01");
+    level01Btn->addChild(level01Txt);
     
-    std::shared_ptr<gbh::ShapeNode> creditsButton = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(200, 60)));
-    creditsButton->setPosition(660, 590);
-    creditsButton->getShape()->setOutlineThickness(0.5);
-    creditsButton->setName("Level02Button");
-    addChild(creditsButton);
+    std::shared_ptr<gbh::ShapeNode> level02Btn = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(200, 60)));
+    level02Btn->setPosition(660, 590);
+    level02Btn->getShape()->setFillColor(sf::Color(0, 255, 0, 1.0));
+    level02Btn->getShape()->setOutlineThickness(0.5);
+    level02Btn->setName("Level02Button");
+    addChild(level02Btn);
 
-    std::shared_ptr<gbh::TextNode> creditsNode = std::make_shared<gbh::TextNode>("Level 02", m_orbitronFont);
-    creditsNode->setPosition(95, 20);
-    creditsNode->setName("Level02");
-    creditsButton->addChild(creditsNode);
+    std::shared_ptr<gbh::TextNode> level02Txt = std::make_shared<gbh::TextNode>("Level 02", m_orbitronFont);
+    level02Txt->setPosition(95, 20);
+    level02Txt->setName("Level02");
+    level02Btn->addChild(level02Txt);
 }
 
 void LevelSelectScene::onMouseEvent(sf::Event& event)
