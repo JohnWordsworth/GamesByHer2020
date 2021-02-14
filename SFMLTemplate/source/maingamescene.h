@@ -4,6 +4,9 @@
 
 class MainGameScene : public gbh::Scene
 {
+public:
+    void endGameScene();
+
 protected:
     void onInitializeScene() override;
     virtual void onKeyboardEvent(sf::Event& event) override;

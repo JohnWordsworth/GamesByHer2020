@@ -31,7 +31,7 @@ void MainGameScene::onInitializeScene() {
 
     // Add a boundary that is almost as big as the screen (1270, 710) and centered.
     std::shared_ptr<gbh::Node> boundary = std::make_shared<gbh::Node>();
-    boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(1270, 710)));
+    boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(2048, 2048)));
     boundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
     boundary->setPosition(1280.0f/2.0f, 720.0f/2.0f);
     addChild(boundary);
@@ -159,6 +159,7 @@ void MainGameScene::advancedCheckPoints()
     {
         m_courseFinished = true;
         std::cout << "Completed Course! \n";
+        endGameScene();
     }
 }
 
@@ -223,4 +224,19 @@ void MainGameScene::onKeyboardEvent(sf::Event& event)
             setDrawPhysicsDebug(false);
         }
     }
+}
+
+void MainGameScene::endGameScene() {
+    std::shared_ptr<gbh::ShapeNode> endScene = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(1270, 710)));
+    endScene->setPosition(640, 360);
+    endScene->getShape()->setFillColor(sf::Color(0, 0, 0, 128));
+    getOverlay().addChild(endScene);
+    
+    std::shared_ptr<gbh::TextNode> endSceneTxt = std::make_shared<gbh::TextNode>("YOU COMPLETED THE COURSE", m_orbitronFont, 60);
+    endSceneTxt->setPosition(650, 300);
+    getOverlay().addChild(endSceneTxt);
+    
+    std::shared_ptr<gbh::TextNode> endSceneTxtPrompt = std::make_shared<gbh::TextNode>("Press spacebar to continue", m_orbitronFont, 60);
+    endSceneTxtPrompt->setPosition(650, 450);
+    getOverlay().addChild(endSceneTxtPrompt);
 }
