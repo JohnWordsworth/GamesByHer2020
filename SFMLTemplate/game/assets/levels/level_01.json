@@ -1,4 +1,8 @@
 {
+    "spawnPoint": {
+        "x": 300,
+        "y": 100
+    },
 	"checkpoints": [
 		{
 			"x": 400, 
@@ -12,5 +16,21 @@
 			"x": 600, 
 			"y": 0
 		}
-	]
+	],
+    "objects": {
+        "asteroid-medium-01": {
+            "name": "asteroid-medium-01",
+            "image": "../assets/gfx/asteroid-medium-01.png",
+            "body": {
+                "radius": 50
+            }
+        }
+    },
+    "actors": [
+        {
+            "object": "asteroid-medium-01",
+            "x": 200,
+            "y": 300
+        }
+    ]
 }

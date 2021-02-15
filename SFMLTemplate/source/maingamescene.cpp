@@ -1,4 +1,5 @@
 #include "maingamescene.h"
+#include "gamestate.h"
 
 #include "sfml-engine/game.h"
 #include "sfml-engine/shapenode.h"
@@ -31,40 +32,6 @@ void MainGameScene::onInitializeScene()
     createPhysicsWorld(sf::Vector2f());
     setDrawPhysicsDebug(true);
     
-    std::shared_ptr<gbh::SpriteNode> bgNode = std::make_shared<gbh::SpriteNode>(kStarfield);
-    bgNode->setName("background");
-    bgNode->setPosition(640, 360);
-    addChild(bgNode);
-    
-    sf::Texture* bgTexture = gbh::TextureCache::getInstance().getTextureAtPath(kStarfield);
-    
-    if (bgTexture) {
-        bgTexture->setSmooth(true);
-        bgTexture->setRepeated(true);
-    }
-    
-    std::shared_ptr<gbh::Node> worldBoundary = std::make_shared<gbh::Node>();
-    worldBoundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(2480, 1400)));
-    worldBoundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
-    worldBoundary->setPosition(0, 0);
-    addChild(worldBoundary);
-    
-    m_ship = std::make_shared<gbh::SpriteNode>(kPlayerShip);
-    m_ship->setPosition(640, 360);
-    m_ship->setOrigin(0.5f, 0.5f);
-    m_ship->setScale(0.5f, 0.5f);
-    m_ship->setPhysicsBody(getPhysicsWorld()->createBox(sf::Vector2f(40.f, 60.f)));
-    m_ship->getPhysicsBody()->setType(gbh::PhysicsBodyType::Dynamic);
-    m_ship->getPhysicsBody()->setLinearDamping(2.0f);
-    m_ship->getPhysicsBody()->setFixedRotation(true);
-    addChild(m_ship);
-    
-    m_camera = std::make_shared<FollowCameraNode>();
-    m_camera->setPosition(640, 360);
-    m_camera->setTarget(m_ship);
-    addChild(m_camera);
-    setCamera(m_camera);
-    
     m_timer = std::make_shared<gbh::TextNode>("0.00", m_robotoFont, 24);
     m_timer->setOrigin(1.0f, 1.0f);
     m_timer->setPosition(1270, 700);
@@ -74,49 +41,48 @@ void MainGameScene::onInitializeScene()
 
 void MainGameScene::onShowScene()
 {
-    loadLevel("../assets/levels/level_01.json");
+    loadLevel(GameState::getInstance().selectedLevel);
     advanceCheckpoints();
     
     m_gameMusic.play();
+    m_gameFinished = false;
 }
 
 
 void MainGameScene::onHideScene()
 {
     m_gameMusic.stop();
+    
+    if (m_gameOverText)
+    {
+        m_gameOverText->removeFromParent(true);
+        m_gameOverText = nullptr;
+    }
 }
 
 
 void MainGameScene::onUpdate(double deltaTime)
 {
+    if (m_gameFinished)
+    {
+        return;
+    }
+    
     m_timerValue += deltaTime;
-    m_timer->setString(std::to_string(m_timerValue));
+    
+    char buffer[32];
+    sprintf(buffer, "%.2f", m_timerValue);
+    m_timer->setString(buffer);
     
     advancedMovementUpdate(deltaTime);
-    
-    static const float cameraSpeed = 200.0f;
-    static const float rotateSpeed = 90.0f;
-    
-    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::Left)) {
-        m_camera->move(-cameraSpeed * (float)deltaTime, 0.0f);
-    }
-    
-    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::Right)) {
-        m_camera->move( cameraSpeed * (float)deltaTime, 0.0f);
-    }
-    
-    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::Up)) {
-        m_camera->move(0.0f, -cameraSpeed * (float)deltaTime);
-    }
-    
-    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::Down)) {
-        m_camera->move(0.0f,  cameraSpeed * (float)deltaTime);
-    }
 }
 
 
 void MainGameScene::loadLevel(const std::string &filename)
 {
+    // Clear the world!
+    removeAllChildren(true);
+    
     std::ifstream file(filename);
     nlohmann::json jsonFile;
     
@@ -129,6 +95,42 @@ void MainGameScene::loadLevel(const std::string &filename)
         std::cout << "Failed to load level from file: " << filename << ": " << ex.what() << "\n";
         return;
     }
+    
+    nlohmann::json spawnPoint = jsonFile["spawnPoint"];
+    sf::Vector2f shipPosition = sf::Vector2f(640, 360);
+    
+    if (spawnPoint.is_object())
+    {
+        if (spawnPoint["x"].is_number()) { shipPosition.x = spawnPoint["x"].get<float>(); }
+        if (spawnPoint["y"].is_number()) { shipPosition.y = spawnPoint["y"].get<float>(); }
+    }
+    
+    std::shared_ptr<gbh::SpriteNode> bgNode = std::make_shared<gbh::SpriteNode>(kStarfield);
+    bgNode->setName("background");
+    bgNode->setPosition(640, 360);
+    addChild(bgNode);
+    
+    std::shared_ptr<gbh::Node> worldBoundary = std::make_shared<gbh::Node>();
+    worldBoundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(2480, 1400)));
+    worldBoundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
+    worldBoundary->setPosition(0, 0);
+    addChild(worldBoundary);
+    
+    m_ship = std::make_shared<gbh::SpriteNode>(kPlayerShip);
+    m_ship->setPosition(shipPosition);
+    m_ship->setOrigin(0.5f, 0.5f);
+    m_ship->setScale(0.5f, 0.5f);
+    m_ship->setPhysicsBody(getPhysicsWorld()->createBox(sf::Vector2f(40.f, 60.f)));
+    m_ship->getPhysicsBody()->setType(gbh::PhysicsBodyType::Dynamic);
+    m_ship->getPhysicsBody()->setLinearDamping(2.0f);
+    m_ship->getPhysicsBody()->setFixedRotation(true);
+    addChild(m_ship);
+    
+    m_camera = std::make_shared<FollowCameraNode>();
+    m_camera->setPosition(shipPosition);
+    m_camera->setTarget(m_ship);
+    addChild(m_camera);
+    setCamera(m_camera);
     
     nlohmann::json checkpoints = jsonFile["checkpoints"];
     
@@ -159,6 +161,34 @@ void MainGameScene::loadLevel(const std::string &filename)
         }
         
         m_currentCheckpoint = -1;
+    }
+    
+    nlohmann::json objects = jsonFile["objects"];
+    nlohmann::json actors = jsonFile["actors"];
+    
+    if (objects.is_object() && actors.is_array())
+    {
+        for(int i = 0; i < actors.size(); ++i)
+        {
+            nlohmann::json actor = actors[i];
+            nlohmann::json object = objects[actor["object"].get<std::string>()];
+            
+            if (object.is_object())
+            {
+                auto node = std::make_shared<gbh::SpriteNode>(object["image"].get<std::string>());
+                node->setPosition(actor["x"].get<float>(), actor["y"].get<float>());
+                
+                if (object["body"].is_object())
+                {
+                    if (object["body"]["radius"].is_number())
+                    {
+                        node->setPhysicsBody(getPhysicsWorld()->createCircle(object["body"]["radius"].get<float>()));
+                    }
+                }
+                
+                addChild(node);
+            }
+        }
     }
 }
 
@@ -217,6 +247,16 @@ void MainGameScene::onKeyboardEvent(sf::Event &event)
 {
     if (event.type == sf::Event::KeyPressed)
     {
+        if (event.key.code == sf::Keyboard::Space && m_gameFinished)
+        {
+            gbh::Game::getInstance().changeScene("title");
+        }
+        
+        if (event.key.code == sf::Keyboard::Escape)
+        {
+            gbh::Game::getInstance().changeScene("title");
+        }
+        
         if (event.key.code == sf::Keyboard::U)
         {
             setDrawPhysicsDebug(!getDrawPhysicsDebug());
@@ -249,15 +289,7 @@ void MainGameScene::onJoystickEvent(sf::Event &event)
 
 void MainGameScene::onBeginPhysicsContact(const gbh::PhysicsContact& contact)
 {
-//    if (contact.containsNode(m_ship.get()))
-//    {
-//        gbh::Node* otherNode = contact.otherNode(m_ship.get());
-//
-//        if (otherNode && otherNode->getName() == "checkpoint")
-//        {
-//            advanceCheckpoints();
-//        }
-//    }
+
 }
 
 
@@ -281,6 +313,10 @@ void MainGameScene::advanceCheckpoints()
     }
     else
     {
-        std::cout << "Completed Course! \n";
+        m_gameOverText = std::make_shared<gbh::TextNode>("Course Finished! Press Space to Continue", m_robotoFont, 40);
+        m_gameOverText->setPosition(640, 360);
+        getOverlay().addChild(m_gameOverText);
+        
+        m_gameFinished = true;
     }
 }

@@ -16,13 +16,20 @@ protected:
     
 	void onShowScene() override;
 	void onHideScene() override;
+    
+    void createBackground();
+    void createAsteroids();
+    void createPlayerShip();
+    void createUI();
 
 private:
 	sf::Font m_robotoFont;
 	sf::Music m_titleMusic;
     
+    std::shared_ptr<gbh::TextNode> m_titleNode;
     std::shared_ptr<gbh::SpriteNode> m_ship;
     
-    std::shared_ptr<gbh::TextNode> m_timer;
-    double m_timerValue = 0.0;
+    std::vector<std::shared_ptr<gbh::SpriteNode>> m_asteroids;
+    
+    double m_sceneTimer = 0.0;
 };

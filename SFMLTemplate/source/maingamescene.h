@@ -39,4 +39,7 @@ private:
     
     std::shared_ptr<gbh::TextNode> m_timer;
     double m_timerValue = 0.0;
+    
+    std::shared_ptr<gbh::TextNode> m_gameOverText;
+    bool m_gameFinished = false;
 };
