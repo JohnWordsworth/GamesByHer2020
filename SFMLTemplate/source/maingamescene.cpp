@@ -51,6 +51,11 @@ void MainGameScene::onShowScene()
 
 void MainGameScene::onHideScene()
 {
+    // Clear the world!
+    removeAllChildren(true);
+    m_ship = nullptr;
+    m_camera = nullptr;
+    
     m_gameMusic.stop();
     
     if (m_gameOverText)
@@ -80,8 +85,6 @@ void MainGameScene::onUpdate(double deltaTime)
 
 void MainGameScene::loadLevel(const std::string &filename)
 {
-    // Clear the world!
-    removeAllChildren(true);
     
     std::ifstream file(filename);
     nlohmann::json jsonFile;
@@ -115,16 +118,9 @@ void MainGameScene::loadLevel(const std::string &filename)
     worldBoundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
     worldBoundary->setPosition(0, 0);
     addChild(worldBoundary);
-    
-    m_ship = std::make_shared<gbh::SpriteNode>(kPlayerShip);
+
+    createPlayerShip();
     m_ship->setPosition(shipPosition);
-    m_ship->setOrigin(0.5f, 0.5f);
-    m_ship->setScale(0.5f, 0.5f);
-    m_ship->setPhysicsBody(getPhysicsWorld()->createBox(sf::Vector2f(40.f, 60.f)));
-    m_ship->getPhysicsBody()->setType(gbh::PhysicsBodyType::Dynamic);
-    m_ship->getPhysicsBody()->setLinearDamping(2.0f);
-    m_ship->getPhysicsBody()->setFixedRotation(true);
-    addChild(m_ship);
     
     m_camera = std::make_shared<FollowCameraNode>();
     m_camera->setPosition(shipPosition);
@@ -319,4 +315,23 @@ void MainGameScene::advanceCheckpoints()
         
         m_gameFinished = true;
     }
+}
+
+
+void MainGameScene::createPlayerShip()
+{
+    // Need to make the ship more dense now that it consists of less mass / smaller shape!
+    gbh::PhysicsMaterial shipMaterial;
+    shipMaterial.density = 3.0f;
+    
+    m_ship = std::make_shared<gbh::SpriteNode>(kPlayerShip);
+    m_ship->setOrigin(0.5f, 0.5f);
+    m_ship->setScale(0.5f, 0.5f);
+    m_ship->setPhysicsBody(getPhysicsWorld()->createEmptyBody());
+    m_ship->getPhysicsBody()->addBox(sf::Vector2f(10, 60), sf::Vector2f(), shipMaterial);
+    m_ship->getPhysicsBody()->addBox(sf::Vector2f(40, 10), sf::Vector2f(0, 5), shipMaterial);
+    m_ship->getPhysicsBody()->setType(gbh::PhysicsBodyType::Dynamic);
+    m_ship->getPhysicsBody()->setLinearDamping(2.0f);
+    m_ship->getPhysicsBody()->setFixedRotation(true);
+    addChild(m_ship);
 }

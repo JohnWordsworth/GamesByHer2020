@@ -30,7 +30,6 @@ void TitleScene::onInitializeScene()
     
     createPhysicsWorld(sf::Vector2f());
     setDrawPhysicsDebug(true);
-    setDebugPhysicsEvents(true);
     
     createBackground();
     createAsteroids();
@@ -86,7 +85,7 @@ void TitleScene::onKeyboardEvent(sf::Event &event)
         
         if (event.key.code == sf::Keyboard::Space)
         {
-            gbh::Game::getInstance().changeScene("game");
+            gbh::Game::getInstance().changeScene("setup");
         }
     }
 }
@@ -170,9 +169,11 @@ void TitleScene::createPlayerShip()
     m_ship->setName("PlayerShip");
     m_ship->setPosition(640, 360);
     m_ship->setOrigin(0.5f, 0.5f);
-    m_ship->setPhysicsBody(getPhysicsWorld()->createBox(sf::Vector2f(80.f, 120.f)));
+    m_ship->setPhysicsBody(getPhysicsWorld()->createEmptyBody());
+    m_ship->getPhysicsBody()->addBox(sf::Vector2f(20, 110));
+    m_ship->getPhysicsBody()->addBox(sf::Vector2f(60, 15), sf::Vector2f(0, 10));
     m_ship->getPhysicsBody()->setType(gbh::PhysicsBodyType::Dynamic);
-    m_ship->getPhysicsBody()->setAngularVelocity(20.0f);
+    //m_ship->getPhysicsBody()->setAngularVelocity(20.0f);
     
     m_ship->setBeginContactCallback([this] (const gbh::PhysicsContact& contact) {
         std::cout << "Collided With: " << contact.otherNode(m_ship.get())->getName() << "\n";

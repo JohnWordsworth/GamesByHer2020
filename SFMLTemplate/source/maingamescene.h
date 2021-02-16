@@ -28,6 +28,8 @@ protected:
     void advanceCheckpoints();
 
 private:
+    void createPlayerShip();
+    
 	sf::Font m_robotoFont;
 	sf::Music m_gameMusic;
     
