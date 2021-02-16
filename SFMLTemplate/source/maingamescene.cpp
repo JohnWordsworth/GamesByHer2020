@@ -55,6 +55,7 @@ void MainGameScene::onHideScene()
     removeAllChildren(true);
     m_ship = nullptr;
     m_camera = nullptr;
+    m_checkPoints.clear();
     
     m_gameMusic.stop();
     
