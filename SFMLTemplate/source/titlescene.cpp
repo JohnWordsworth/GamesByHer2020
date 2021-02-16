@@ -122,6 +122,24 @@ void TitleScene::createBackground()
     worldBoundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
     worldBoundary->setPosition(640, 360);
     addChild(worldBoundary);
+    
+    // Test Edge List
+    std::vector<sf::Vector2f> vertices = {
+        sf::Vector2f(-630.0f, -350.0f),
+        sf::Vector2f(-500.0f,  0.0f),
+        sf::Vector2f(-630.0f,  350.0f),
+        sf::Vector2f( 630.0f,  350.0f),
+        sf::Vector2f( 500.0f,  0.0f),
+        sf::Vector2f( 630.0f, -350.0f),
+        sf::Vector2f(-630.0f, -350.0f),
+    };
+    
+    std::shared_ptr<gbh::Node> edgeTest = std::make_shared<gbh::Node>();
+    edgeTest->setName("EdgeTest");
+    edgeTest->setPhysicsBody(getPhysicsWorld()->createEdgeList(vertices, gbh::PhysicsMaterial(1.0f, 1.0f, 0.0f)));
+    edgeTest->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
+    edgeTest->setPosition(640, 360);
+    addChild(edgeTest);
 }
 
 
