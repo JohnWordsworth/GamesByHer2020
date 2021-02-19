@@ -4,6 +4,10 @@
 #include <SFML/Audio.hpp>
 
 
+/**
+   The Title Screen that basically just has a 'start game' button but has a bunch of other
+   effects to test parts of the engine.
+ */
 class TitleScene : public gbh::Scene
 {
 protected:
