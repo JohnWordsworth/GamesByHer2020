@@ -18,24 +18,21 @@ void FollowCameraNode::onUpdate(double deltaTime)
     float xDifference = m_target->getPosition().x - this->getPosition().x;
     float yDifference = m_target->getPosition().y - this->getPosition().y;
     
-    float xLimit = 250;
-    float yLimit = 150;
-
-    if (xDifference > xLimit)
+    if (xDifference > m_xLimit)
     {
-        move((float)deltaTime * 2.0f * (xDifference - xLimit), 0);
+        move((float)deltaTime * m_followSpeed * (xDifference - m_xLimit), 0);
     }
-    else if (xDifference < -xLimit)
+    else if (xDifference < -m_xLimit)
     {
-        move((float)deltaTime * 2.0f * (xDifference + xLimit), 0);
+        move((float)deltaTime * m_followSpeed * (xDifference + m_xLimit), 0);
     }
     
-    if (yDifference > yLimit)
+    if (yDifference > m_yLimit)
     {
-        move(0, (float)deltaTime * 2.0f * (yDifference - yLimit));
+        move(0, (float)deltaTime * m_followSpeed * (yDifference - m_yLimit));
     }
-    else if (yDifference < -yLimit)
+    else if (yDifference < -m_yLimit)
     {
-        move(0, (float)deltaTime * 2.0f * (yDifference + yLimit));
+        move(0, (float)deltaTime * m_followSpeed * (yDifference + m_yLimit));
     }
 }
