@@ -5,9 +5,6 @@
 
 class LevelSelectScene : public gbh::Scene
 {
-public:
-    std::shared_ptr<int> m_levelSelected = nullptr;
-
 protected:
     void onInitializeScene() override;
     virtual void onMouseEvent(sf::Event& event) override;

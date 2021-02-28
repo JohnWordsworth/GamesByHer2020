@@ -1,4 +1,6 @@
 #include "levelselectscene.h"
+#include "gamestate.h"
+
 #include "sfml-engine/game.h"
 #include "sfml-engine/shapenode.h"
 #include "sfml-engine/spritenode.h"
@@ -59,12 +61,12 @@ void LevelSelectScene::onMouseEvent(sf::Event& event)
 
         if (node->getName() == "Level01" || node->getName() == "Level01Button")
         {
-            m_levelSelected = std::make_shared<int>(1);
+            GameState::getInstance().selectedLevel = "../assets/json/level01.json";
             std::cout << "Btn 01 pressed\n";
         }
         else if (node->getName() == "Level02" || node->getName() == "Level02Button")
         {
-            m_levelSelected = std::make_shared<int>(2);
+            GameState::getInstance().selectedLevel = "../assets/json/level02.json";
             std::cout << "Btn 02 pressed\n";
         }
 

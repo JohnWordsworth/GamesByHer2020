@@ -1,5 +1,6 @@
 #include "maingamescene.h"
-#include "levelselectscene.h"
+#include "gamestate.h"
+
 #include "sfml-engine/game.h"
 #include "sfml-engine/mathutils.h"
 #include "sfml-engine/textnode.h"
@@ -24,17 +25,27 @@ MainGameScene& MainGameScene::InstanceOf() {
 }
 
 void MainGameScene::onInitializeScene() {
+    //load font
     m_orbitronFont.loadFromFile(kTitleScreenFont);
-
-    //2048x02048 bg
-    std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
-    spriteMainBg->setPosition(640, 360);
-    spriteMainBg->setName("GameBackground");
-    addChild(spriteMainBg);
 
     //Add initial physics and player ship
     createPhysicsWorld(sf::Vector2f(0.0f,0.0f));
+    
+    //add timer
+    m_timerText = std::make_shared<gbh::TextNode>("0", m_orbitronFont, 24);
+    m_timerText->setOrigin(1.0f, 1.0f);
+    m_timerText->setPosition(1270, 700);
+    getOverlay().addChild(m_timerText);
+}
 
+void MainGameScene::onShowScene()
+{
+    loadLevel(GameState::getInstance().selectedLevel);
+    advancedCheckPoints();
+}
+
+void MainGameScene::loadLevel(const std::string &filename)
+{
     // Add a boundary that is almost as big as the screen (1270, 710) and centered.
     std::shared_ptr<gbh::Node> boundary = std::make_shared<gbh::Node>();
     boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(2048, 2048)));
@@ -44,6 +55,57 @@ void MainGameScene::onInitializeScene() {
                              
     const sf::Vector2f shipSize = sf::Vector2f(80.0f, 120.0f);
     
+    //load from files
+    std::ifstream file(filename);
+    nlohmann::json jsonFile;
+    
+    try
+    {
+        jsonFile = nlohmann::json::parse(file);
+    }
+    catch(const std::exception& ex)
+    {
+        std::cout << "Failed to load level from file: " << filename << ": " << ex.what() << "\n";
+        return;
+    }
+    
+    nlohmann::json bg = jsonFile["config"]["background"];
+
+    if (bg.is_string())
+    {
+        //initialize background
+        std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(bg);
+        spriteMainBg->setPosition(640, 360);
+        spriteMainBg->setName("GameBackground");
+        addChild(spriteMainBg);
+    }
+    
+    //initialize checkpoints
+    nlohmann::json checkPoints = jsonFile["checkpoints"];
+    
+    if (checkPoints.is_array())
+    {
+        for(int i = 0; i < checkPoints.size(); ++i)
+        {
+            float x = checkPoints[i]["x"].get<float>();
+            float y = checkPoints[i]["y"].get<float>();
+
+            std::shared_ptr<gbh::SpriteNode> node = std::make_shared<gbh::SpriteNode>(kCheckpoint);
+            node->setColor(kInactiveCheckpoint);
+            node->setPhysicsBody(getPhysicsWorld()->createCircle(50));
+            node->getPhysicsBody()->makeSensor();
+            node->getPhysicsBody()->setEnabled(false);
+            node->setPosition(x, y);
+            node->setName("checkpoint");
+
+            m_checkPoints.push_back(node);
+            addChild(node);
+        }
+        
+        m_currentCheckPoint = -1;
+    }
+    
+    //add playerShip
     m_playerShip = std::make_shared<gbh::SpriteNode>(kPlayerShip);
     m_playerShip->setName("playership");
     m_playerShip->setPosition(620, 300);
@@ -75,69 +137,6 @@ void MainGameScene::onInitializeScene() {
 
     addChild(m_followCamera);
     setCamera(m_followCamera);
-    
-    //add timer
-    m_timerText = std::make_shared<gbh::TextNode>("0", m_orbitronFont, 24);
-    m_timerText->setOrigin(1.0f, 1.0f);
-    m_timerText->setPosition(1270, 700);
-    getOverlay().addChild(m_timerText);
-}
-
-void MainGameScene::onShowScene()
-{
-    const std::string pathBegin = "../assets/json/level0";
-    const std::string pathEnd = ".json";
-    std::string fullPath;
-    
-    if (MainGameScene::InstanceOf().levelSelect.m_levelSelected != nullptr)
-    {
-        std::string fullPath = pathBegin + std::to_string(*MainGameScene::InstanceOf().levelSelect.m_levelSelected) + pathEnd;
-        
-        loadLevel(fullPath);
-    }
-
-    advancedCheckPoints();
-}
-
-void MainGameScene::loadLevel(const std::string &filename)
-{
-    std::ifstream file(filename);
-    nlohmann::json jsonFile;
-    
-    try
-    {
-        jsonFile = nlohmann::json::parse(file);
-    }
-    catch(const std::exception& ex)
-    {
-        std::cout << "Failed to load level from file: " << filename << ": " << ex.what() << "\n";
-        return;
-    }
-    
-    //initialize checkpoints
-    nlohmann::json checkPoints = jsonFile["checkpoints"];
-    
-    if (checkPoints.is_array())
-    {
-        for(int i = 0; i < checkPoints.size(); ++i)
-        {
-            float x = checkPoints[i]["x"].get<float>();
-            float y = checkPoints[i]["y"].get<float>();
-
-            std::shared_ptr<gbh::SpriteNode> node = std::make_shared<gbh::SpriteNode>(kCheckpoint);
-            node->setColor(kInactiveCheckpoint);
-            node->setPhysicsBody(getPhysicsWorld()->createCircle(50));
-            node->getPhysicsBody()->makeSensor();
-            node->getPhysicsBody()->setEnabled(false);
-            node->setPosition(x, y);
-            node->setName("checkpoint");
-
-            m_checkPoints.push_back(node);
-            addChild(node);
-        }
-        
-        m_currentCheckPoint = -1;
-    }
 }
 
 void MainGameScene::onBeginPhysicsContact(const gbh::PhysicsContact& contact)
