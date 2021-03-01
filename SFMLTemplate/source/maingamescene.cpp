@@ -31,8 +31,8 @@ void MainGameScene::onInitializeScene() {
     //load font
     m_orbitronFont.loadFromFile(kTitleScreenFont);
 
-    //Add initial physics and player ship
-    createPhysicsWorld(sf::Vector2f(0.0f,0.0f));
+    //Add initial physicsWorld
+    createPhysicsWorld(sf::Vector2f());
     
     //add timer
     m_timerText = std::make_shared<gbh::TextNode>("0", m_orbitronFont, 24);
@@ -131,7 +131,7 @@ void MainGameScene::loadLevel(const std::string &filename)
         m_currentCheckPoint = -1;
     }
     
-    //Create ship
+    //Create ship & spawn point
     nlohmann::json spawnPoint = jsonFile["config"]["spawnPoint"];
     
     if (spawnPoint.is_object())
