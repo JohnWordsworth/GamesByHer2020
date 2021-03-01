@@ -23,7 +23,9 @@ protected:
     void loadLevel(const std::string& fileName);
     
 private:
+    void addWorldBoundary();
     void advancedCheckPoints();
+    void addPlayerShip(const int spawnPointX, const int spawnPointY);
 
     std::shared_ptr<gbh::SpriteNode> m_playerShip;
     std::shared_ptr<FollowCameraNode> m_followCamera;

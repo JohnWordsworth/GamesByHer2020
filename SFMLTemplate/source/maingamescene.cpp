@@ -14,6 +14,9 @@ const std::string kAsteroid01 = "../assets/gfx/asteroid-small-01.png";
 const std::string kCheckpoint = "../assets/gfx/checkpoint.png";
 const std::string kTitleScreenFont = "../assets/fonts/orbitron.ttf";
 
+//Ship size
+const sf::Vector2f shipSize = sf::Vector2f(80.0f, 120.0f);
+
 //Checkpoint colors
 static const sf::Color kInactiveCheckpoint = sf::Color(255, 255, 255, 64);
 static const sf::Color kNextCheckpoint = sf::Color(64, 64, 255, 192);
@@ -44,7 +47,7 @@ void MainGameScene::onShowScene()
     advancedCheckPoints();
 }
 
-void MainGameScene::loadLevel(const std::string &filename)
+void MainGameScene::addWorldBoundary()
 {
     // Add a boundary that is almost as big as the screen (1270, 710) and centered.
     std::shared_ptr<gbh::Node> boundary = std::make_shared<gbh::Node>();
@@ -52,9 +55,32 @@ void MainGameScene::loadLevel(const std::string &filename)
     boundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
     boundary->setPosition(1280.0f/2.0f, 720.0f/2.0f);
     addChild(boundary);
-                             
-    const sf::Vector2f shipSize = sf::Vector2f(80.0f, 120.0f);
+}
+
+void MainGameScene::addPlayerShip(const int spawnPointX, const int spawnPointY)
+{
+    m_playerShip = std::make_shared<gbh::SpriteNode>(kPlayerShip);
+    m_playerShip->setName("playership");
+    m_playerShip->setPosition(spawnPointX, spawnPointY);
+    m_playerShip->setScale(0.5f, 0.5f);
+    m_playerShip->setPhysicsBody(getPhysicsWorld()->createBox(shipSize * 0.5f));
+    m_playerShip->getPhysicsBody()->setLinearDamping(2.0f);
+    m_playerShip->getPhysicsBody()->setFixedRotation(true);
+    addChild(m_playerShip);
     
+    //Initialize camera & setPosition to match current position of playerShip
+    m_followCamera = std::make_shared<FollowCameraNode>();
+    m_followCamera->setTarget(m_playerShip);
+    m_followCamera->setPosition(spawnPointX, spawnPointY);
+
+    addChild(m_followCamera);
+    setCamera(m_followCamera);
+}
+
+void MainGameScene::loadLevel(const std::string &filename)
+{
+    addWorldBoundary();
+
     //load from files
     std::ifstream file(filename);
     nlohmann::json jsonFile;
@@ -69,18 +95,18 @@ void MainGameScene::loadLevel(const std::string &filename)
         return;
     }
     
+    //Initialize background
     nlohmann::json bg = jsonFile["config"]["background"];
 
     if (bg.is_string())
     {
-        //initialize background
         std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(bg);
         spriteMainBg->setPosition(640, 360);
         spriteMainBg->setName("GameBackground");
         addChild(spriteMainBg);
     }
     
-    //initialize checkpoints
+    //Initialize checkpoints
     nlohmann::json checkPoints = jsonFile["checkpoints"];
     
     if (checkPoints.is_array())
@@ -105,15 +131,20 @@ void MainGameScene::loadLevel(const std::string &filename)
         m_currentCheckPoint = -1;
     }
     
-    //add playerShip
-    m_playerShip = std::make_shared<gbh::SpriteNode>(kPlayerShip);
-    m_playerShip->setName("playership");
-    m_playerShip->setPosition(620, 300);
-    m_playerShip->setScale(0.5f, 0.5f);
-    m_playerShip->setPhysicsBody(getPhysicsWorld()->createBox(shipSize * 0.5f));
-    m_playerShip->getPhysicsBody()->setLinearDamping(2.0f);
-    m_playerShip->getPhysicsBody()->setFixedRotation(true);
-    addChild(m_playerShip);
+    //Create ship
+    nlohmann::json spawnPoint = jsonFile["config"]["spawnPoint"];
+    
+    if (spawnPoint.is_object())
+    {
+        if (spawnPoint["x"].is_number() && spawnPoint["y"].is_number())
+        {
+            addPlayerShip(spawnPoint["x"].get<float>(), spawnPoint["y"].get<float>());
+        }
+    }
+    else
+    {
+        addPlayerShip(640, 360);
+    }
     
     //add dynamic asteroid
     m_asteroidObstacle01 = std::make_shared<gbh::SpriteNode>(kAsteroid01);
@@ -129,14 +160,6 @@ void MainGameScene::loadLevel(const std::string &filename)
     m_asteroidObstacle01->getPhysicsBody()->setAngularDamping(0);
     m_asteroidObstacle01->getPhysicsBody()->applyTorque(20.0f, true);
     addChild(m_asteroidObstacle01);
-    
-    //initialize camera
-    m_followCamera = std::make_shared<FollowCameraNode>();
-    m_followCamera->setTarget(m_playerShip);
-    m_followCamera->setPosition(640, 360);
-
-    addChild(m_followCamera);
-    setCamera(m_followCamera);
 }
 
 void MainGameScene::onBeginPhysicsContact(const gbh::PhysicsContact& contact)
