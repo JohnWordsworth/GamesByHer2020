@@ -78,7 +78,7 @@ void MainGameScene::addPlayerShip(const float spawnPointX, const float spawnPoin
     m_playerShip = std::make_shared<gbh::SpriteNode>(kPlayerShip);
     m_playerShip->setName("playership");
     m_playerShip->setPosition(spawnPointX, spawnPointY);
-    m_playerShip->setScale(0.5f, 0.5f);
+    m_playerShip->setScale(0.35f, 0.35f);
     m_playerShip->setPhysicsBody(getPhysicsWorld()->createBox(shipSize * 0.5f));
     m_playerShip->getPhysicsBody()->setLinearDamping(2.0f);
     m_playerShip->getPhysicsBody()->setFixedRotation(true);
@@ -188,7 +188,7 @@ void MainGameScene::loadLevel(const std::string &filename)
     m_asteroidObstacle01->setName("Asteroid2");
     
     std::shared_ptr<gbh::PhysicsBody> body = getPhysicsWorld()->createBox(sf::Vector2f(20.f, 20.0f));
-    body->setType(gbh::PhysicsBodyType::Dynamic);
+    body->setType(gbh::PhysicsBodyType::Static);
     body->setLinearDamping(20.0f);
 
     m_asteroidObstacle01->setPhysicsBody(body);
