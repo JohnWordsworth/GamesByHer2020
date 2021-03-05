@@ -67,7 +67,7 @@ void MainGameScene::addWorldBoundary(const float positionX, const float position
 {
     // Add a boundary that is as big as the window (1270, 710) and centered.
     std::shared_ptr<gbh::Node> boundary = std::make_shared<gbh::Node>();
-    boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(positionX, positionY)));
+  boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f((positionX*1.5), (positionY*2.5))));
     boundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
     boundary->setPosition((positionX / 2), (positionY / 2));
     addChild(boundary);
