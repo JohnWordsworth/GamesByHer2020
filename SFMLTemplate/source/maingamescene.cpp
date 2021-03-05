@@ -47,17 +47,33 @@ void MainGameScene::onShowScene()
     advancedCheckPoints();
 }
 
-void MainGameScene::addWorldBoundary()
+void MainGameScene::onHideScene()
 {
-    // Add a boundary that is almost as big as the screen (1270, 710) and centered.
+    // Clears the world before next gameplay
+    removeAllChildren(true);
+    m_playerShip = nullptr;
+    m_followCamera = nullptr;
+    m_checkPoints.clear();
+    
+    // Clear game completed msg
+    if (m_gameOverTxt)
+    {
+        m_gameOverTxt->removeFromParent(true);
+        m_gameOverTxt = nullptr;
+    }
+}
+
+void MainGameScene::addWorldBoundary(const float positionX, const float positionY)
+{
+    // Add a boundary that is as big as the window (1270, 710) and centered.
     std::shared_ptr<gbh::Node> boundary = std::make_shared<gbh::Node>();
-    boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(2048, 2048)));
+    boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(positionX, positionY)));
     boundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
-    boundary->setPosition(1280.0f/2.0f, 720.0f/2.0f);
+    boundary->setPosition((positionX / 2), (positionY / 2));
     addChild(boundary);
 }
 
-void MainGameScene::addPlayerShip(const int spawnPointX, const int spawnPointY)
+void MainGameScene::addPlayerShip(const float spawnPointX, const float spawnPointY)
 {
     m_playerShip = std::make_shared<gbh::SpriteNode>(kPlayerShip);
     m_playerShip->setName("playership");
@@ -77,10 +93,28 @@ void MainGameScene::addPlayerShip(const int spawnPointX, const int spawnPointY)
     setCamera(m_followCamera);
 }
 
+void MainGameScene::addBasicGraphics(const std::string backgroundImg, const float boundaryX, const float boundaryY)
+{
+    //Get size of window 1270 x 710
+    sf::Vector2u windowSize = sf::Vector2u(1270, 710);
+    
+    //Add boundary
+    addWorldBoundary(windowSize.x, windowSize.y);
+    
+    //Calculate ratio between window size & bg sprite size.
+    float scaleX = boundaryX / (float) windowSize.x ;
+    float scaleY = boundaryY / (float) windowSize.y ;
+
+    //Add background sprite & center based on the 1270x640 screen (aka window)
+    std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(backgroundImg);
+    spriteMainBg->setPosition((windowSize.x / 2), (windowSize.y / 2));
+    spriteMainBg->setScale(scaleX, scaleY);
+    spriteMainBg->setName("GameBackground");
+    addChild(spriteMainBg);
+}
+
 void MainGameScene::loadLevel(const std::string &filename)
 {
-    addWorldBoundary();
-
     //load from files
     std::ifstream file(filename);
     nlohmann::json jsonFile;
@@ -97,15 +131,31 @@ void MainGameScene::loadLevel(const std::string &filename)
     
     //Initialize background
     nlohmann::json bg = jsonFile["config"]["background"];
-
-    if (bg.is_string())
-    {
-        std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(bg);
-        spriteMainBg->setPosition(640, 360);
-        spriteMainBg->setName("GameBackground");
-        addChild(spriteMainBg);
-    }
+    nlohmann::json worldBoundary = jsonFile["config"]["worldBoundary"];
     
+    //Create bg, boundary, ship & spawn point
+    if (worldBoundary.is_object())
+    {
+        if (worldBoundary["x"].is_number() && worldBoundary["y"].is_number())
+        {
+            if (bg.is_string())
+            {
+                addBasicGraphics(bg, worldBoundary["x"].get<float>(), worldBoundary["y"].get<float>());
+
+                addPlayerShip((worldBoundary["x"].get<float>() / 2), (worldBoundary["y"].get<float>() / 2));
+                
+            }
+            else
+            {
+                std::cout << "[ERROR] Failed to load background image.\n";
+            }
+        }
+    }
+    else
+    {
+        std::cout << "[ERROR] Failed to load world boundary.\n";
+    }
+
     //Initialize checkpoints
     nlohmann::json checkPoints = jsonFile["checkpoints"];
     
@@ -129,21 +179,6 @@ void MainGameScene::loadLevel(const std::string &filename)
         }
         
         m_currentCheckPoint = -1;
-    }
-    
-    //Create ship & spawn point
-    nlohmann::json spawnPoint = jsonFile["config"]["spawnPoint"];
-    
-    if (spawnPoint.is_object())
-    {
-        if (spawnPoint["x"].is_number() && spawnPoint["y"].is_number())
-        {
-            addPlayerShip(spawnPoint["x"].get<float>(), spawnPoint["y"].get<float>());
-        }
-    }
-    else
-    {
-        addPlayerShip(640, 360);
     }
     
     //add dynamic asteroid
@@ -265,16 +300,7 @@ void MainGameScene::onKeyboardEvent(sf::Event& event)
 }
 
 void MainGameScene::endGameScene() {
-    std::shared_ptr<gbh::ShapeNode> endScene = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(1270, 710)));
-    endScene->setPosition(640, 360);
-    endScene->getShape()->setFillColor(sf::Color(0, 0, 0, 128));
-    getOverlay().addChild(endScene);
-    
-    std::shared_ptr<gbh::TextNode> endSceneTxt = std::make_shared<gbh::TextNode>("YOU COMPLETED THE COURSE", m_orbitronFont, 60);
-    endSceneTxt->setPosition(650, 300);
-    getOverlay().addChild(endSceneTxt);
-    
-    std::shared_ptr<gbh::TextNode> endSceneTxtPrompt = std::make_shared<gbh::TextNode>("Press spacebar to continue", m_orbitronFont, 60);
-    endSceneTxtPrompt->setPosition(650, 450);
-    getOverlay().addChild(endSceneTxtPrompt);
+    m_gameOverTxt = std::make_shared<gbh::TextNode>("Course Finished! Press Space to Continue", m_orbitronFont, 40);
+    m_gameOverTxt->setPosition(640, 360);
+    getOverlay().addChild(m_gameOverTxt);
 }

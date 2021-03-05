@@ -64,7 +64,7 @@ void TitleScene::onInitializeScene()
     addChild(startButton);
 
     std::shared_ptr<gbh::TextNode> startNode = std::make_shared<gbh::TextNode>("START", m_orbitronFont);
-    startNode->setPosition(95, 20);
+    startNode->setPosition(95, 25);
     startNode->setName("StartButton");
     startButton->addChild(startNode);
     
@@ -76,7 +76,7 @@ void TitleScene::onInitializeScene()
     addChild(creditsButton);
 
     std::shared_ptr<gbh::TextNode> creditsNode = std::make_shared<gbh::TextNode>("CREDITS", m_orbitronFont);
-    creditsNode->setPosition(95, 20);
+    creditsNode->setPosition(95, 25);
     creditsNode->setName("CreditsButton");
     creditsButton->addChild(creditsNode);
 }

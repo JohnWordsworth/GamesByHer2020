@@ -15,13 +15,9 @@
     ],
     "config": {
         "background": "../assets/gfx/level02.png",
-        "worldsize": {
-            "x": 2048,
-            "y": 2048
-        },
-        "spawnPoint": {
-            "x": 240,
-            "y": 200
+        "worldBoundary": {
+            "x": 1600,
+            "y": 1200
         }
     }
 }

@@ -15,7 +15,7 @@
     ],
     "config": {
         "background": "../assets/gfx/starfield-01.png",
-        "worldsize": {
+        "worldBoundary": {
             "x": 2048,
             "y": 2048
         }
