@@ -73,3 +73,19 @@ void LevelSelectScene::onMouseEvent(sf::Event& event)
         gbh::Game::getInstance().changeScene("maingame");
     }
 }
+
+std::shared_ptr<gbh::Node> LevelSelectScene::createBtn(const sf::Vector2f &size, const std::string &txt, const std::string &name)
+{
+    auto btn = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(size));
+    btn->setPosition(size * 0.5f);
+    btn->getShape()->setOutlineThickness(0.5);
+    btn->getShape()->setFillColor(sf::Color(0, 255, 0, 1.0));
+    btn->setName(name);
+    
+    auto label = std::make_shared<gbh::TextNode>(txt, m_orbitronFont, 60);
+    label->setPosition(size * 0.5f);
+    label->setName(name);
+    btn->addChild(label);
+    
+    return btn;
+}
