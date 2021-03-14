@@ -9,9 +9,9 @@
 [Clarissa Liljander](https://github.com/clalil)  
 
 ## About this code  
-This code is part of one of my three projects from the [GamesByHer](Games by Her Website) 2020 course. 
+This code is part of one of my three projects from the [GamesByHer](http://gamedevcourse.paradoxinteractive.com/) 2020 course. 
 
-The additional classes built into this SFML engine with namespace __gbh__ were written by John Wordsworth and Sofie Angere from Paradox Interactive's [GamesByHer](Games by Her Website) course and included into the original fork boilerplate for this project.
+The additional classes built into this SFML engine with namespace __gbh__ were written by John Wordsworth and Sofie Angere from Paradox Interactive's [GamesByHer](http://gamedevcourse.paradoxinteractive.com/) course and included into the original fork boilerplate for this project.
 
 ## Dependencies  
 This project can be built using [Xcode](https://developer.apple.com/xcode/) or [Visual Studio](https://visualstudio.microsoft.com/).
