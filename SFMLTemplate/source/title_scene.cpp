@@ -1,5 +1,5 @@
 #include "title_scene.h"
-
+#include "levelselectscene.h"
 #include <iostream>
 
 #include "sfml-engine/game.h"
@@ -22,6 +22,7 @@ void TitleScene::onInitializeScene()
     m_titleMusic.openFromFile(kTitleMusic);
     m_titleMusic.setVolume(25);
 
+    //Add bg
     std::shared_ptr<gbh::SpriteNode> spriteNode = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
     spriteNode->setName("Background");
     spriteNode->setPosition(640, 360);
@@ -32,9 +33,25 @@ void TitleScene::onInitializeScene()
     textNode->setName("Title");
     addChild(textNode);
 
+    //Add sprite ship
     std::shared_ptr<gbh::SpriteNode> ship = std::make_shared<gbh::SpriteNode>(kPlayerShip);
     ship->setPosition(640, 300);
     addChild(ship);
+    
+    //Add start btn
+    std::shared_ptr<gbh::ShapeNode> startBtn = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(200, 60)));
+    startBtn->setPosition(640, 520);
+    startBtn->getShape()->setFillColor(sf::Color(0, 255, 0, 1.0));
+    startBtn->getShape()->setOutlineThickness(0.5f);
+    startBtn->setName("StartButton");
+    addChild(startBtn);
+
+    std::shared_ptr<gbh::TextNode> startTxt = std::make_shared<gbh::TextNode>("START", m_orbitronFont, 30);
+    startTxt->setPosition(95, 25);
+    startTxt->setName("StartButton");
+    startBtn->addChild(startTxt);
+    
+    // Add asteroid field
     
     m_asteroid01 = std::make_shared<gbh::SpriteNode>(kAsteroid01);
     m_asteroid01->setPosition(300, 500);
@@ -55,30 +72,6 @@ void TitleScene::onInitializeScene()
     m_asteroid04->setPosition(200, 160);
     m_asteroid04->setOrigin(0.5f, 0.5f);
     addChild(m_asteroid04);
-
-    std::shared_ptr<gbh::ShapeNode> startButton = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(200, 60)));
-    startButton->setPosition(660, 500);
-    startButton->getShape()->setFillColor(sf::Color(0, 255, 0, 64));
-    startButton->getShape()->setOutlineThickness(10.f);
-    startButton->setName("StartButton");
-    addChild(startButton);
-
-    std::shared_ptr<gbh::TextNode> startNode = std::make_shared<gbh::TextNode>("START", m_orbitronFont);
-    startNode->setPosition(95, 25);
-    startNode->setName("StartButton");
-    startButton->addChild(startNode);
-    
-    std::shared_ptr<gbh::ShapeNode> creditsButton = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(200, 60)));
-    creditsButton->setPosition(660, 590);
-    creditsButton->getShape()->setFillColor(sf::Color(0, 255, 0, 64));
-    creditsButton->getShape()->setOutlineThickness(10.f);
-    creditsButton->setName("CreditsButton");
-    addChild(creditsButton);
-
-    std::shared_ptr<gbh::TextNode> creditsNode = std::make_shared<gbh::TextNode>("CREDITS", m_orbitronFont);
-    creditsNode->setPosition(95, 25);
-    creditsNode->setName("CreditsButton");
-    creditsButton->addChild(creditsNode);
 }
 
 void TitleScene::onUpdate(double deltaTime)
@@ -102,10 +95,6 @@ void TitleScene::onMouseEvent(sf::Event& event)
         if (node->getName() == "StartButton")
         {
             gbh::Game::getInstance().changeScene("levels");
-        }
-        else if (node->getName() == "CreditsButton")
-        {
-            gbh::Game::getInstance().changeScene("credits");
         }
     }
 }

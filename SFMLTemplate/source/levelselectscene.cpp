@@ -11,7 +11,7 @@
 
 const std::string kTitleScreenFont = "../assets/fonts/orbitron.ttf";
 const std::string kTitleScreenBackground = "../assets/gfx/starfield-01.png";
-const std::string kLevelSelectFile = "../assets/json/setup.json";
+const std::string kLevelSelectFile = "../assets/json/setupLevels.json";
 
 void LevelSelectScene::onInitializeScene()
 {

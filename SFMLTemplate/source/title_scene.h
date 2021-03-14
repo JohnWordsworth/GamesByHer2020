@@ -1,8 +1,6 @@
 #pragma once
-
 #include "sfml-engine/scene.h"
 #include <SFML/Audio.hpp>
-
 
 class TitleScene : public gbh::Scene
 {
