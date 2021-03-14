@@ -14,10 +14,10 @@
         }
     ],
     "config": {
-        "background": "../assets/gfx/starfield-01.png",
+        "background": "../assets/gfx/level02.png",
         "worldBoundary": {
-            "x": 2048,
-            "y": 2048
+            "x": 1600,
+            "y": 1200
         }
     }
 }

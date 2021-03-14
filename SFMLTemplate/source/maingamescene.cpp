@@ -1,4 +1,6 @@
 #include "maingamescene.h"
+#include "gamestate.h"
+
 #include "sfml-engine/game.h"
 #include "sfml-engine/mathutils.h"
 #include "sfml-engine/textnode.h"
@@ -12,63 +14,25 @@ const std::string kAsteroid01 = "../assets/gfx/asteroid-small-01.png";
 const std::string kCheckpoint = "../assets/gfx/checkpoint.png";
 const std::string kTitleScreenFont = "../assets/fonts/orbitron.ttf";
 
+//Ship size
+const sf::Vector2f shipSize = sf::Vector2f(80.0f, 120.0f);
+
 //Checkpoint colors
 static const sf::Color kInactiveCheckpoint = sf::Color(255, 255, 255, 64);
 static const sf::Color kNextCheckpoint = sf::Color(64, 64, 255, 192);
 static const sf::Color kDoneCheckpoint = sf::Color(64, 255, 64, 128);
 
+MainGameScene& MainGameScene::InstanceOf() {
+    static MainGameScene mainGame;
+    return mainGame;
+}
+
 void MainGameScene::onInitializeScene() {
+    //load font
     m_orbitronFont.loadFromFile(kTitleScreenFont);
 
-    //2048x02048 bg
-    std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
-    spriteMainBg->setPosition(640, 360);
-    spriteMainBg->setName("GameBackground");
-    addChild(spriteMainBg);
-
-    //Add initial physics and player ship
-    createPhysicsWorld(sf::Vector2f(0.0f,0.0f));
-
-    // Add a boundary that is almost as big as the screen (1270, 710) and centered.
-    std::shared_ptr<gbh::Node> boundary = std::make_shared<gbh::Node>();
-    boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f(2048, 2048)));
-    boundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
-    boundary->setPosition(1280.0f/2.0f, 720.0f/2.0f);
-    addChild(boundary);
-                             
-    const sf::Vector2f shipSize = sf::Vector2f(80.0f, 120.0f);
-    
-    m_playerShip = std::make_shared<gbh::SpriteNode>(kPlayerShip);
-    m_playerShip->setName("playership");
-    m_playerShip->setPosition(620, 300);
-    m_playerShip->setScale(0.5f, 0.5f);
-    m_playerShip->setPhysicsBody(getPhysicsWorld()->createBox(shipSize * 0.5f));
-    m_playerShip->getPhysicsBody()->setLinearDamping(2.0f);
-    m_playerShip->getPhysicsBody()->setFixedRotation(true);
-    addChild(m_playerShip);
-    
-    //add dynamic asteroid
-    m_asteroidObstacle01 = std::make_shared<gbh::SpriteNode>(kAsteroid01);
-    m_asteroidObstacle01->setOrigin(0.5f, 0.5f);
-    m_asteroidObstacle01->setPosition(830, 150);
-    m_asteroidObstacle01->setName("Asteroid2");
-    
-    std::shared_ptr<gbh::PhysicsBody> body = getPhysicsWorld()->createBox(sf::Vector2f(20.f, 20.0f));
-    body->setType(gbh::PhysicsBodyType::Dynamic);
-    body->setLinearDamping(20.0f);
-
-    m_asteroidObstacle01->setPhysicsBody(body);
-    m_asteroidObstacle01->getPhysicsBody()->setAngularDamping(0);
-    m_asteroidObstacle01->getPhysicsBody()->applyTorque(20.0f, true);
-    addChild(m_asteroidObstacle01);
-    
-    //initialize camera
-    m_followCamera = std::make_shared<FollowCameraNode>();
-    m_followCamera->setTarget(m_playerShip);
-    m_followCamera->setPosition(640, 360);
-
-    addChild(m_followCamera);
-    setCamera(m_followCamera);
+    //Add initial physicsWorld
+    createPhysicsWorld(sf::Vector2f());
     
     //add timer
     m_timerText = std::make_shared<gbh::TextNode>("0", m_orbitronFont, 24);
@@ -79,12 +43,79 @@ void MainGameScene::onInitializeScene() {
 
 void MainGameScene::onShowScene()
 {
-    loadLevel("../assets/json/level01.json");
+    loadLevel(GameState::getInstance().selectedLevel);
     advancedCheckPoints();
+}
+
+void MainGameScene::onHideScene()
+{
+    // Clears the world before next gameplay
+    removeAllChildren(true);
+    m_playerShip = nullptr;
+    m_followCamera = nullptr;
+    m_checkPoints.clear();
+    
+    // Clear game completed msg
+    if (m_gameOverTxt)
+    {
+        m_gameOverTxt->removeFromParent(true);
+        m_gameOverTxt = nullptr;
+    }
+}
+
+void MainGameScene::addWorldBoundary(const float positionX, const float positionY)
+{
+    // Add a boundary that is as big as the window (1270, 710) and centered.
+    std::shared_ptr<gbh::Node> boundary = std::make_shared<gbh::Node>();
+  boundary->setPhysicsBody(getPhysicsWorld()->createEdgeBox(sf::Vector2f((positionX*1.5), (positionY*2.5))));
+    boundary->getPhysicsBody()->setType(gbh::PhysicsBodyType::Static);
+    boundary->setPosition((positionX / 2), (positionY / 2));
+    addChild(boundary);
+}
+
+void MainGameScene::addPlayerShip(const float spawnPointX, const float spawnPointY)
+{
+    m_playerShip = std::make_shared<gbh::SpriteNode>(kPlayerShip);
+    m_playerShip->setName("playership");
+    m_playerShip->setPosition(spawnPointX, spawnPointY);
+    m_playerShip->setScale(0.35f, 0.35f);
+    m_playerShip->setPhysicsBody(getPhysicsWorld()->createBox(shipSize * 0.5f));
+    m_playerShip->getPhysicsBody()->setLinearDamping(2.0f);
+    m_playerShip->getPhysicsBody()->setFixedRotation(true);
+    addChild(m_playerShip);
+    
+    //Initialize camera & setPosition to match current position of playerShip
+    m_followCamera = std::make_shared<FollowCameraNode>();
+    m_followCamera->setTarget(m_playerShip);
+    m_followCamera->setPosition(spawnPointX, spawnPointY);
+
+    addChild(m_followCamera);
+    setCamera(m_followCamera);
+}
+
+void MainGameScene::addBasicGraphics(const std::string backgroundImg, const float boundaryX, const float boundaryY)
+{
+    //Get size of window 1270 x 710
+    sf::Vector2u windowSize = sf::Vector2u(1270, 710);
+    
+    //Add boundary
+    addWorldBoundary(windowSize.x, windowSize.y);
+    
+    //Calculate ratio between window size & bg sprite size.
+    float scaleX = boundaryX / (float) windowSize.x ;
+    float scaleY = boundaryY / (float) windowSize.y ;
+
+    //Add background sprite & center based on the 1270x640 screen (aka window)
+    std::shared_ptr<gbh::SpriteNode> spriteMainBg = std::make_shared<gbh::SpriteNode>(backgroundImg);
+    spriteMainBg->setPosition((windowSize.x / 2), (windowSize.y / 2));
+    spriteMainBg->setScale(scaleX, scaleY);
+    spriteMainBg->setName("GameBackground");
+    addChild(spriteMainBg);
 }
 
 void MainGameScene::loadLevel(const std::string &filename)
 {
+    //load from files
     std::ifstream file(filename);
     nlohmann::json jsonFile;
     
@@ -98,7 +129,34 @@ void MainGameScene::loadLevel(const std::string &filename)
         return;
     }
     
-    //initialize checkpoints
+    //Initialize background
+    nlohmann::json bg = jsonFile["config"]["background"];
+    nlohmann::json worldBoundary = jsonFile["config"]["worldBoundary"];
+    
+    //Create bg, boundary, ship & spawn point
+    if (worldBoundary.is_object())
+    {
+        if (worldBoundary["x"].is_number() && worldBoundary["y"].is_number())
+        {
+            if (bg.is_string())
+            {
+                addBasicGraphics(bg, worldBoundary["x"].get<float>(), worldBoundary["y"].get<float>());
+
+                addPlayerShip((worldBoundary["x"].get<float>() / 2), (worldBoundary["y"].get<float>() / 2));
+                
+            }
+            else
+            {
+                std::cout << "[ERROR] Failed to load background image.\n";
+            }
+        }
+    }
+    else
+    {
+        std::cout << "[ERROR] Failed to load world boundary.\n";
+    }
+
+    //Initialize checkpoints
     nlohmann::json checkPoints = jsonFile["checkpoints"];
     
     if (checkPoints.is_array())
@@ -122,6 +180,21 @@ void MainGameScene::loadLevel(const std::string &filename)
         
         m_currentCheckPoint = -1;
     }
+    
+    //add dynamic asteroid
+    m_asteroidObstacle01 = std::make_shared<gbh::SpriteNode>(kAsteroid01);
+    m_asteroidObstacle01->setOrigin(0.5f, 0.5f);
+    m_asteroidObstacle01->setPosition(830, 150);
+    m_asteroidObstacle01->setName("Asteroid2");
+    
+    std::shared_ptr<gbh::PhysicsBody> body = getPhysicsWorld()->createBox(sf::Vector2f(20.f, 20.0f));
+    body->setType(gbh::PhysicsBodyType::Static);
+    body->setLinearDamping(20.0f);
+
+    m_asteroidObstacle01->setPhysicsBody(body);
+    m_asteroidObstacle01->getPhysicsBody()->setAngularDamping(0);
+    m_asteroidObstacle01->getPhysicsBody()->applyTorque(20.0f, true);
+    addChild(m_asteroidObstacle01);
 }
 
 void MainGameScene::onBeginPhysicsContact(const gbh::PhysicsContact& contact)
@@ -227,16 +300,7 @@ void MainGameScene::onKeyboardEvent(sf::Event& event)
 }
 
 void MainGameScene::endGameScene() {
-    std::shared_ptr<gbh::ShapeNode> endScene = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(1270, 710)));
-    endScene->setPosition(640, 360);
-    endScene->getShape()->setFillColor(sf::Color(0, 0, 0, 128));
-    getOverlay().addChild(endScene);
-    
-    std::shared_ptr<gbh::TextNode> endSceneTxt = std::make_shared<gbh::TextNode>("YOU COMPLETED THE COURSE", m_orbitronFont, 60);
-    endSceneTxt->setPosition(650, 300);
-    getOverlay().addChild(endSceneTxt);
-    
-    std::shared_ptr<gbh::TextNode> endSceneTxtPrompt = std::make_shared<gbh::TextNode>("Press spacebar to continue", m_orbitronFont, 60);
-    endSceneTxtPrompt->setPosition(650, 450);
-    getOverlay().addChild(endSceneTxtPrompt);
+    m_gameOverTxt = std::make_shared<gbh::TextNode>("Course Finished! Press Space to Continue", m_orbitronFont, 40);
+    m_gameOverTxt->setPosition(640, 360);
+    getOverlay().addChild(m_gameOverTxt);
 }
