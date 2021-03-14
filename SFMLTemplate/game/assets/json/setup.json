@@ -1,0 +1,12 @@
+{
+    "levelSelectOptions": [
+        {
+            "title": "Level 1",
+            "path": "../assets/json/level01.json"
+        },
+        {
+            "title": "Level 2",
+            "path": "../assets/json/level02.json"
+        }
+    ]
+}

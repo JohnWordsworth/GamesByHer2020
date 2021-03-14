@@ -12,10 +12,11 @@ struct LevelSelection
 class LevelSelectScene : public gbh::Scene
 {
 protected:
+    void addButtons();
+    std::shared_ptr<gbh::Node> createBtn(const sf::Vector2f &size, const std::string &txt, const std::string &name);
+    void loadLevels(const std::string &fileName);
     void onInitializeScene() override;
     virtual void onMouseEvent(sf::Event& event) override;
-
-    std::shared_ptr<gbh::Node> createBtn(const sf::Vector2f &size, const std::string &txt, const std::string &name);
 
 private:
     sf::Font m_orbitronFont;

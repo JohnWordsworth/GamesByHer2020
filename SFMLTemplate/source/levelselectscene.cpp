@@ -5,18 +5,18 @@
 #include "sfml-engine/shapenode.h"
 #include "sfml-engine/spritenode.h"
 #include "sfml-engine/textnode.h"
+#include <nlohmann/json.hpp>
+#include <fstream>
 #include <iostream>
 
-const std::string kTitleMusic = "../assets/music/titlescreen.ogg";
 const std::string kTitleScreenFont = "../assets/fonts/orbitron.ttf";
 const std::string kTitleScreenBackground = "../assets/gfx/starfield-01.png";
+const std::string kLevelSelectFile = "../assets/json/setup.json";
 
 void LevelSelectScene::onInitializeScene()
 {
     m_orbitronFont.loadFromFile(kTitleScreenFont);
-    m_titleMusic.openFromFile(kTitleMusic);
-    m_titleMusic.setVolume(25);
-
+    
     std::shared_ptr<gbh::SpriteNode> spriteNode = std::make_shared<gbh::SpriteNode>(kTitleScreenBackground);
     spriteNode->setName("Background");
     spriteNode->setPosition(640, 360);
@@ -26,52 +26,54 @@ void LevelSelectScene::onInitializeScene()
     textNode->setPosition(650, 100);
     textNode->setName("LevelSelect");
     addChild(textNode);
-
-    std::shared_ptr<gbh::ShapeNode> level01Btn = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(200, 60)));
-    level01Btn->setPosition(660, 500);
-    level01Btn->getShape()->setOutlineThickness(0.5);
-    level01Btn->getShape()->setFillColor(sf::Color(0, 255, 0, 1.0));
-    level01Btn->setName("Level01Button");
-    addChild(level01Btn);
-
-    std::shared_ptr<gbh::TextNode> level01Txt = std::make_shared<gbh::TextNode>("Level 01", m_orbitronFont);
-    level01Txt->setPosition(95, 20);
-    level01Txt->setName("Level01");
-    level01Btn->addChild(level01Txt);
     
-    std::shared_ptr<gbh::ShapeNode> level02Btn = std::make_shared<gbh::ShapeNode>(sf::RectangleShape(sf::Vector2f(200, 60)));
-    level02Btn->setPosition(660, 590);
-    level02Btn->getShape()->setFillColor(sf::Color(0, 255, 0, 1.0));
-    level02Btn->getShape()->setOutlineThickness(0.5);
-    level02Btn->setName("Level02Button");
-    addChild(level02Btn);
-
-    std::shared_ptr<gbh::TextNode> level02Txt = std::make_shared<gbh::TextNode>("Level 02", m_orbitronFont);
-    level02Txt->setPosition(95, 20);
-    level02Txt->setName("Level02");
-    level02Btn->addChild(level02Txt);
+    loadLevels(kLevelSelectFile);
+    addButtons();
 }
 
-void LevelSelectScene::onMouseEvent(sf::Event& event)
+void LevelSelectScene::loadLevels(const std::string& fileName)
 {
-    if (event.type == sf::Event::MouseButtonPressed)
+    //load from files
+    std::ifstream file(fileName);
+    nlohmann::json jsonFile;
+    
+    try
     {
-        sf::Vector2 mousePosition = { (float)event.mouseButton.x, (float)event.mouseButton.y };
-        std::shared_ptr<gbh::Node> node = getNodeAtViewPoint(mousePosition);
-
-        if (node->getName() == "Level01" || node->getName() == "Level01Button")
-        {
-            GameState::getInstance().selectedLevel = "../assets/json/level01.json";
-            std::cout << "Btn 01 pressed\n";
-        }
-        else if (node->getName() == "Level02" || node->getName() == "Level02Button")
-        {
-            GameState::getInstance().selectedLevel = "../assets/json/level02.json";
-            std::cout << "Btn 02 pressed\n";
-        }
-
-        gbh::Game::getInstance().changeScene("maingame");
+        jsonFile = nlohmann::json::parse(file);
     }
+    catch(const std::exception& ex)
+    {
+        std::cout << "Failed to load level from file: " << fileName << ": " << ex.what() << "\n";
+        return;
+    }
+    
+    //Initialize content to create dynamic buttons
+    nlohmann::json btnContent = jsonFile["levelSelectOptions"];
+    
+    if (btnContent.is_array())
+    {
+        for(int i = 0; i < btnContent.size(); ++i)
+        {
+            std::string title = btnContent[i]["title"].get<std::string>();
+            std::string level = btnContent[i]["path"].get<std::string>();
+            
+            levels.push_back({ title, level });
+        }
+    }
+}
+
+void LevelSelectScene::addButtons()
+{
+    for(int i = 0; i < levels.size(); ++i)
+    {
+        auto button = createBtn(sf::Vector2f(400, 60), levels[i].level,  levels[i].fileToLoad);
+        button->setPosition(640.0f, 240 + 80*i);
+        addChild(button);
+    }
+
+    auto returnBtn = createBtn(sf::Vector2f(400, 60), "Return", "Return");
+    returnBtn->setPosition(640, 620);
+    addChild(returnBtn);
 }
 
 std::shared_ptr<gbh::Node> LevelSelectScene::createBtn(const sf::Vector2f &size, const std::string &txt, const std::string &name)
@@ -82,10 +84,33 @@ std::shared_ptr<gbh::Node> LevelSelectScene::createBtn(const sf::Vector2f &size,
     btn->getShape()->setFillColor(sf::Color(0, 255, 0, 1.0));
     btn->setName(name);
     
-    auto label = std::make_shared<gbh::TextNode>(txt, m_orbitronFont, 60);
+    auto label = std::make_shared<gbh::TextNode>(txt, m_orbitronFont, 30);
     label->setPosition(size * 0.5f);
     label->setName(name);
     btn->addChild(label);
     
     return btn;
+}
+
+void LevelSelectScene::onMouseEvent(sf::Event& event)
+{
+    if (event.type == sf::Event::MouseButtonPressed)
+    {
+        sf::Vector2 mousePosition = { (float)event.mouseButton.x, (float)event.mouseButton.y };
+        std::shared_ptr<gbh::Node> node = getNodeAtViewPoint(mousePosition);
+
+        if (node)
+        {
+            if (node->getName() == "Return")
+            {
+              gbh::Game::getInstance().changeScene("title");
+            }
+            // Returns false if at least one character is uppercase i.e. a title.
+            if (!std::any_of(node->getName().begin(), node->getName().end(), isupper))
+            {
+                GameState::getInstance().selectedLevel = node->getName();
+                gbh::Game::getInstance().changeScene("maingame");
+            }
+        }
+    }
 }
