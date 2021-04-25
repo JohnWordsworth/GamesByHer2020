@@ -7,6 +7,7 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 const std::string kTitleScreenBackground = "../assets/gfx/starfield-01.png";
 const std::string kPlayerShip = "../assets/gfx/player-ship.png";
@@ -33,18 +34,19 @@ void MainGameScene::onInitializeScene() {
 
     //Add initial physicsWorld
     createPhysicsWorld(sf::Vector2f());
-    
-    //add timer
-    m_timerText = std::make_shared<gbh::TextNode>("0", m_orbitronFont, 24);
-    m_timerText->setOrigin(1.0f, 1.0f);
-    m_timerText->setPosition(1270, 700);
-    getOverlay().addChild(m_timerText);
 }
 
 void MainGameScene::onShowScene()
 {
     loadLevel(GameState::getInstance().selectedLevel);
     advancedCheckPoints();
+
+    //resets timer if new game is run
+    if (m_timerText == nullptr)
+    {
+        setTimer();
+        m_courseFinished = false;
+    }
 }
 
 void MainGameScene::onHideScene()
@@ -54,12 +56,18 @@ void MainGameScene::onHideScene()
     m_playerShip = nullptr;
     m_followCamera = nullptr;
     m_checkPoints.clear();
+    m_playerTime = 0;
     
     // Clear game completed msg
     if (m_gameOverTxt)
     {
         m_gameOverTxt->removeFromParent(true);
         m_gameOverTxt = nullptr;
+    }
+    if (m_timerText)
+    {
+        m_timerText->removeFromParent(true);
+        m_timerText = nullptr;
     }
 }
 
@@ -240,39 +248,17 @@ void MainGameScene::onUpdate(double deltaTime)
 {
     //add time to timer
     m_playerTime += deltaTime;
+    std::ostringstream ss;
 
     if (m_courseFinished == false)
     {
         float currentTime = floor(m_playerTime * 10) / 10;
-        m_timerText->setString(std::to_string(currentTime));
+        ss << currentTime;
+        std::string elapsedTime = ss.str();
+        m_timerText->setString(elapsedTime);
     }
-
-    //player movement
-    sf::Vector2f moveDirection;
-    const float accelerationForce = 2000.0f;
-    const float degreesPerSecond = 45.0f;
-
-    //would be sf::Keyboard::isKeyPressed() for NON MacOs users
-    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::W)) {
-        moveDirection.y -= 1.0f;
-    }
-
-    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::S)) {
-        moveDirection.y += 1.0f;
-    }
-
-    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::A)) {
-        moveDirection.x -= 1.0f;
-        m_playerShip->rotate(-(degreesPerSecond) * deltaTime);
-    }
-
-    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::D)) {
-        moveDirection.x += 1.0f;
-        m_playerShip->rotate(+(degreesPerSecond) * deltaTime);
-    }
-
-    moveDirection = gbh::math::normalize(moveDirection);
-    m_playerShip->getPhysicsBody()->applyForceToCenter(moveDirection*accelerationForce);
+    
+    movePlayerShip(deltaTime);
 }
 
 void MainGameScene::onKeyboardEvent(sf::Event& event)
@@ -299,8 +285,50 @@ void MainGameScene::onKeyboardEvent(sf::Event& event)
     }
 }
 
-void MainGameScene::endGameScene() {
-    m_gameOverTxt = std::make_shared<gbh::TextNode>("Course Finished! Press Space to Continue", m_orbitronFont, 40);
-    m_gameOverTxt->setPosition(640, 360);
-    getOverlay().addChild(m_gameOverTxt);
+void MainGameScene::endGameScene()
+{
+    if (m_courseFinished)
+    {
+        m_gameOverTxt = std::make_shared<gbh::TextNode>("Course Finished! Press Space to Continue", m_orbitronFont, 40);
+        m_gameOverTxt->setPosition(640, 360);
+        getOverlay().addChild(m_gameOverTxt);
+    }
+}
+
+void MainGameScene::setTimer()
+{
+    m_timerText = std::make_shared<gbh::TextNode>("0", m_orbitronFont, 24);
+    m_timerText->setOrigin(1.0f, 1.0f);
+    m_timerText->setPosition(1270, 700);
+    getOverlay().addChild(m_timerText);
+}
+
+void MainGameScene::movePlayerShip(double deltaTime)
+{
+    //player movement
+    sf::Vector2f moveDirection;
+    const float accelerationForce = 2000.0f;
+    const float degreesPerSecond = 45.0f;
+
+    //would be sf::Keyboard::isKeyPressed() for NON MacOs users
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::W)) {
+        moveDirection.y -= 1.0f;
+    }
+
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::S)) {
+        moveDirection.y += 1.0f;
+    }
+
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::A)) {
+        moveDirection.x -= 1.0f;
+        m_playerShip->rotate(-(degreesPerSecond) * deltaTime);
+    }
+
+    if (gbh::Game::getInstance().isKeyPressed(sf::Keyboard::D)) {
+        moveDirection.x += 1.0f;
+        m_playerShip->rotate(+(degreesPerSecond) * deltaTime);
+    }
+
+    moveDirection = gbh::math::normalize(moveDirection);
+    m_playerShip->getPhysicsBody()->applyForceToCenter(moveDirection*accelerationForce);
 }

@@ -26,15 +26,17 @@ private:
     void addPlayerShip(const float spawnPointX, const float spawnPointY);
     void addWorldBoundary(const float positionX, const float positionY);
     void advancedCheckPoints();
+    void movePlayerShip(double deltaTime);
+    void setTimer();
 
     std::shared_ptr<gbh::SpriteNode> m_playerShip;
     std::shared_ptr<FollowCameraNode> m_followCamera;
     std::shared_ptr<gbh::TextNode> m_timerText;
     std::shared_ptr<gbh::TextNode> m_gameOverTxt;
-
     std::vector<std::shared_ptr<gbh::SpriteNode>> m_checkPoints;
+
     int m_currentCheckPoint = -1;
-    double m_playerTime;
+    double m_playerTime = 0;
     bool m_courseFinished = false;
     
     std::shared_ptr<gbh::SpriteNode> m_asteroidObstacle01;

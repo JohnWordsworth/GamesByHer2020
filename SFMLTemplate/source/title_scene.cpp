@@ -53,30 +53,10 @@ void TitleScene::onInitializeScene()
     startBtn->addChild(startTxt);
     
     // Add asteroid field
-    for(int i = 0; i < Asteroid::createAsteroids().size(); ++i)
+    for (int i = 0; i < Asteroid::createAsteroids().size(); ++i)
         {
             addChild(Asteroid::createAsteroids()[i]);
         }
-    
-//    m_asteroid01 = std::make_shared<gbh::SpriteNode>(kAsteroid01);
-//    m_asteroid01->setPosition(300, 500);
-//    m_asteroid01->setOrigin(0.5f, 0.5f);
-//    addChild(m_asteroid01);
-//
-//    m_asteroid02 = std::make_shared<gbh::SpriteNode>(kAsteroid02);
-//    m_asteroid02->setPosition(400, 300);
-//    m_asteroid02->setOrigin(0.5f, 0.5f);
-//    addChild(m_asteroid02);
-//
-//    m_asteroid03 = std::make_shared<gbh::SpriteNode>(kAsteroid03);
-//    m_asteroid03->setPosition(960, 550);
-//    m_asteroid03->setOrigin(0.5f, 0.5f);
-//    addChild(m_asteroid03);
-//
-//    m_asteroid04 = std::make_shared<gbh::SpriteNode>(kAsteroid04);
-//    m_asteroid04->setPosition(200, 160);
-//    m_asteroid04->setOrigin(0.5f, 0.5f);
-//    addChild(m_asteroid04);
 }
 
 void TitleScene::onUpdate(double deltaTime)
