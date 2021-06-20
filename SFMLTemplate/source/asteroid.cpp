@@ -19,6 +19,7 @@ std::vector<std::shared_ptr<gbh::SpriteNode>> Asteroid::createAsteroids()
 
     for(int i = 0; i < 6; ++i)
     {
+        std::string currentAsteroid = std::to_string(i);
         std::shuffle(asteroidImages.begin(), asteroidImages.end(), randomiser);
 
         float x = xRandom(randomiser);
@@ -33,7 +34,7 @@ std::vector<std::shared_ptr<gbh::SpriteNode>> Asteroid::createAsteroids()
         auto asteroid = std::make_shared<gbh::SpriteNode>(asteroidImages.front());
         asteroid->setPosition(x, y);
         asteroid->setOrigin(0.5f,0.5f);
-        
+        asteroid->setName("asteroidK" + currentAsteroid);
         tempVector.push_back(asteroid);
     }
     

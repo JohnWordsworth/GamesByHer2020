@@ -28,6 +28,8 @@ The following instructions were written by John Wordsworth in the original fork 
 6. Run 'vcpkg install sfml box2d'
 7. Run setup-macos.sh
 
+If all is good and well, and you wish to 
+
 #### If you run into errors
 If you are getting the error ** No CMAKE_C_COMPILER could be found.**, then it means that CMake cannot determine which version of XCode you are using. The first port of call in this case is to ensure that you have the latest version of Xcode and CMake installed. If you are sure you do, then you also need to ensure that you can access your tools from the command line. To do this, launch a terminal and run the following;
 

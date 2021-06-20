@@ -61,12 +61,13 @@ void TitleScene::onInitializeScene()
 
 void TitleScene::onUpdate(double deltaTime)
 {
-//    const float degreesPerSecond = 45.0f;
-//
-//    m_asteroid01->rotate(degreesPerSecond * deltaTime);
-//    m_asteroid02->rotate(degreesPerSecond * deltaTime);
-//    m_asteroid03->rotate(degreesPerSecond * deltaTime);
-//    m_asteroid04->rotate(degreesPerSecond * deltaTime);
+    const float degreesPerSecond = 45.0f;
+
+    for (int i = 0; i < 6; ++i)
+    {
+        std::shared_ptr<gbh::Node> asteroid = getFirstChildWithName("asteroidK" + std::to_string(i), false);
+        asteroid->rotate(degreesPerSecond * deltaTime);
+    }
 }
 
 

@@ -15,13 +15,6 @@ protected:
     
     void createAsteroids();
 private:
-    std::shared_ptr<gbh::SpriteNode> m_asteroid01;
-    std::shared_ptr<gbh::SpriteNode> m_asteroid02;
-    std::shared_ptr<gbh::SpriteNode> m_asteroid03;
-    std::shared_ptr<gbh::SpriteNode> m_asteroid04;
-    
-    std::vector<std::shared_ptr<gbh::SpriteNode>> m_asteroids;
-
     sf::Font m_orbitronFont;
     sf::Music m_titleMusic;
 };
